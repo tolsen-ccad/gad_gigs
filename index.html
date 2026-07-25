@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Internship & Entry-Level Quest Board</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #1b1c34;
+    --bg-2: #23244a;
+    --surface: #2a2b57;
+    --surface-hover: #33356b;
+    --border: #3c3e73;
+    --text: #e9e8f5;
+    --text-muted: #a5a3c9;
+    --amber: #f2b84b;
+    --teal: #4fd1c5;
+    --rose: #ef7a9a;
+    --purple: #9f7aea;
+  }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% 0%, var(--bg-2), var(--bg) 60%);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 28px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .wrap{ max-width: 760px; margin: 0 auto; }
+  header{ margin-bottom: 22px; }
+
+  .eyebrow{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--teal);
+    margin: 0 0 10px;
+  }
+
+  h1{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 8px;
+    color: var(--amber);
+    text-shadow: 0 0 18px rgba(242,184,75,0.25);
+  }
+
+  .sub{ color: var(--text-muted); font-size: 14px; margin: 0; }
+
+  .board-nav {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0 12px;
+  }
+
+  .nav-item {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(42, 43, 87, 0.4);
+    border: 1px solid var(--border);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-item:hover {
+    border-color: var(--teal);
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .nav-item.active {
+    background: var(--surface);
+    border-color: var(--amber);
+    color: var(--amber);
+    box-shadow: 0 0 12px rgba(242, 184, 75, 0.15);
+  }
+
+  .controls{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin: 20px 0 4px;
+  }
+
+  .chip{
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .chip:hover{ border-color: var(--teal); color: var(--text); }
+  .chip.active{
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #0c1220;
+    font-weight: 600;
+  }
+
+  .search{
+    width:100%;
+    margin-top: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .search:focus{ outline: none; border-color: var(--amber); }
+
+  .status{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 16px 2px 10px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+  }
+
+  .status button{
+    background:none; border:1px solid var(--border); color: var(--text-muted);
+    border-radius: 8px; padding: 4px 10px; font-size: 12px; cursor:pointer;
+    font-family:inherit;
+  }
+  .status button:hover{ color: var(--text); border-color: var(--teal); }
+
+  .feed{ display:flex; flex-direction:column; gap: 12px; }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display:flex;
+    gap: 14px;
+    align-items:flex-start;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+    text-decoration:none;
+    color: inherit;
+  }
+  .card:hover{
+    border-color: var(--amber);
+    transform: translateY(-1px);
+  }
+
+  .rank{
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    background: linear-gradient(160deg, var(--amber), #c98d1e);
+    color: #241a05;
+  }
+  .rank.co-op{ background: linear-gradient(160deg, var(--teal), #1f8a80); color:#052622; }
+  .rank.entry { background: linear-gradient(160deg, var(--purple), #6b46c1); color:#fff; }
+
+  .card-body{ flex:1; min-width:0; }
+  .card-title{ font-size: 15px; font-weight:600; margin: 0 0 3px; }
+  .card-meta{
+    font-size: 13px; color: var(--text-muted); margin: 0 0 8px;
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .tag.type-badge { border-color: var(--purple); color: var(--purple); background: rgba(159,122,234,0.1); font-weight:600; }
+  .tag.new{ border-color: var(--teal); color: var(--teal); }
+  .tag.stale-badge{
+    border-color: var(--rose);
+    color: var(--rose);
+    background: rgba(239,122,154,0.1);
+  }
+
+  .card.stale{ opacity: 0.6; }
+  .card.stale:hover{ opacity: 0.85; border-color: var(--rose); }
+  .empty, .loading{ text-align:center; padding: 50px 20px; color: var(--text-muted); font-size: 14px; }
+
+  .manual-check{
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+    scroll-margin-top: 20px;
+  }
+  .manual-check h2{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    margin: 0 0 6px;
+  }
+  .manual-check .manual-check-sub{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+  .manual-check-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .manual-check-item{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .manual-check-item h3{
+    font-size: 14px;
+    margin: 0 0 4px;
+    color: var(--text);
+  }
+  .manual-check-item p{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .manual-check-links{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .manual-check-links a{
+    font-size: 12px;
+    color: var(--amber);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: border-color 0.15s ease;
+  }
+  .manual-check-links a:hover{ border-color: var(--amber); }
+  .manual-check-note{
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .dice-roll{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 36px 0 4px;
+  }
+  .dice-svg{ overflow: visible; }
+  .dice-frame{ display: none; }
+  .dice-frame.active{ display: block; }
+  .dice-frame rect{
+    fill: none;
+    stroke: var(--teal);
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+  .dice-frame circle{ fill: var(--teal); }
+  .dice-caption{
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    letter-spacing: 0.03em;
+  }
+
+  footer{
+    margin-top: 30px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align:center;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">// CCAD - GAME ART &amp; DESIGN</p>
+    <h1 id="page-title">CAREER &amp; INTERNSHIP<br>QUEST BOARD</h1>
+    <p class="sub">Live internships and entry-level opportunities across Game Art & Design sectors. <br>Refreshes with each visit; check back periodically for more opportunities!</p>
+    
+    <nav class="board-nav">
+      <a href="index.html" class="nav-item active">⚔ Internships &amp; Entry-level</a>
+      <a href="gigs.html" class="nav-item">💎 Contract &amp; Gigs</a>
+      <a href="#manual-check" class="nav-item">🔍 Also Check These Sites ↓</a>
+    </nav>
+  </header>
+
+  <div class="controls" id="tag-filters"></div>
+  <input class="search" id="search-input" type="text" placeholder="Search by title, studio/company, or location…">
+
+  <div class="status">
+    <span id="status-text">Loading listings…</span>
+    <button id="refresh-btn">↻ Refresh</button>
+  </div>
+
+  <div class="feed" id="feed"></div>
+
+  <div class="manual-check" id="manual-check">
+    <h2>// ALSO WORTH CHECKING</h2>
+    <p class="manual-check-sub">These platforms don't allow automated searching (respectfully, their terms of service block it). I recommend checking them out for building your portfolio, there's plenty of opportunities!</p>
+    <div class="manual-check-grid">
+      <div class="manual-check-item">
+        <h3>Upwork</h3>
+        <p>Huge freelance marketplace. Apply directly to posted jobs.</p>
+        <div class="manual-check-links">
+          <a href="https://www.upwork.com/nx/search/jobs/?q=3d+game+artist" target="_blank" rel="noopener noreferrer">3D Game Artist</a>
+          <a href="https://www.upwork.com/nx/search/jobs/?q=2d+concept+artist" target="_blank" rel="noopener noreferrer">2D Concept Artist</a>
+          <a href="https://www.upwork.com/nx/search/jobs/?q=game+designer" target="_blank" rel="noopener noreferrer">Game Designer</a>
+        </div>
+      </div>
+      <div class="manual-check-item">
+        <h3>ArtStation Jobs</h3>
+        <p>Industry job board for games, film & media artists. Filter by "Freelance".</p>
+        <div class="manual-check-links">
+          <a href="https://www.artstation.com/jobs" target="_blank" rel="noopener noreferrer">Browse Jobs</a>
+        </div>
+      </div>
+      <div class="manual-check-item">
+        <h3>Polycount</h3>
+        <p>Long-running 3D/2D game art community. Active freelance postings forum.</p>
+        <div class="manual-check-links">
+          <a href="https://polycount.com/categories/freelance-job-postings" target="_blank" rel="noopener noreferrer">Freelance Postings</a>
+        </div>
+      </div>
+      <div class="manual-check-item">
+        <h3>Fiverr</h3>
+        <p>READ ME: there's no public job list to link to. Instead, create a seller profile, then check "Buyer Requests" under the More menu for briefs you can respond to.</p>
+        <p class="manual-check-note">No direct link available. This one requires an account.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="dice-roll" aria-hidden="true">
+    <svg viewBox="0 0 120 120" width="72" height="72" class="dice-svg">
+      <g class="dice-frames">
+      <g class="dice-frame active" data-frame="0">
+        <g transform="translate(0 -0.0) rotate(0.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="1">
+        <g transform="translate(0 -1.2) rotate(15.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="2">
+        <g transform="translate(0 -2.3) rotate(30.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="3">
+        <g transform="translate(0 -3.4) rotate(45.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="4">
+        <g transform="translate(0 -4.5) rotate(60.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="5">
+        <g transform="translate(0 -5.5) rotate(75.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="6">
+        <g transform="translate(0 -6.4) rotate(90.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="7">
+        <g transform="translate(0 -7.1) rotate(105.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="8">
+        <g transform="translate(0 -7.8) rotate(120.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="9">
+        <g transform="translate(0 -8.3) rotate(135.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="10">
+        <g transform="translate(0 -8.7) rotate(150.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="11">
+        <g transform="translate(0 -8.9) rotate(165.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="12">
+        <g transform="translate(0 -9.0) rotate(180.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="13">
+        <g transform="translate(0 -8.9) rotate(195.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="14">
+        <g transform="translate(0 -8.7) rotate(210.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="15">
+        <g transform="translate(0 -8.3) rotate(225.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="16">
+        <g transform="translate(0 -7.8) rotate(240.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="17">
+        <g transform="translate(0 -7.1) rotate(255.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="18">
+        <g transform="translate(0 -6.4) rotate(270.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="19">
+        <g transform="translate(0 -5.5) rotate(285.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="20">
+        <g transform="translate(0 -4.5) rotate(300.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="21">
+        <g transform="translate(0 -3.4) rotate(315.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="22">
+        <g transform="translate(0 -2.3) rotate(330.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="23">
+        <g transform="translate(0 -1.2) rotate(345.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      </g>
+    </svg>
+    <p class="dice-caption">// may the odds roll in your favor</p>
+  </div>
+
+  <script>
+  (function(){
+    var frames = document.querySelectorAll('.dice-frame');
+    if (!frames.length) return;
+    var current = 0;
+    setInterval(function(){
+      frames[current].classList.remove('active');
+      current = (current + 1) % frames.length;
+      frames[current].classList.add('active');
+    }, 125); // 24 frames × 125ms = 3s full loop
+  })();
+  </script>
+
+<footer>Sources refresh live from studio APIs & curated boards. <br> Made with love from Tay <3</footer>
+
+<script>
+const CONFIG = {
+  pageTitle: "CAREER &amp; INTERNSHIP<br>QUEST BOARD",
+
+  keywords: ["intern", "internship", "co-op", "co op", "apprentice", "trainee", "entry level", "junior"],
+  excludedKeywords: ["senior", "sr", "lead", "director", "manager", "principal", "staff", "head of", "chief", "expert", "experienced"],
+  staleAfterDays: 60,
+
+  // Cleaned to remove deprecated endpoints that throw 404s
+  greenhouseBoards: [
+    "insomniac",          
+    "wildlifestudios",   
+    "gramgamescareers",   
+    "neteasegames",       
+    "cloudchamberen",    
+    "2k",                
+    "rockstargames",      
+    "riotgames",          
+    "epicgames",          
+    "bungie",             
+    "naughtydog",         
+  ],
+
+  // Cleaned to remove deprecated endpoints that throw 404s
+  leverBoards: [
+    "larian",               
+    "dreamgames",           
+    "voodoo",               
+    "blackbirdinteractive", 
+  ],
+
+  rssFeeds: [
+    {
+      name: "Work With Indies",
+      url: "https://workwithindies.com/careers/rss.xml",
+    },
+    {
+      name: "GameJobHunter",
+      url: "https://gamejobhunter.com/feed/", 
+    },
+    {
+      name: "Games Jobs Direct",
+      url: "https://www.gamesjobsdirect.com/rss", 
+    },
+    {
+      // Documented, keyless RSS feed with explicit job-type filtering
+      // (?type=internship) — see https://jobicy.com/jobs-rss-feed.
+      // Their fair-use guidance asks for no more than hourly polling,
+      // which a per-visitor page load comfortably stays under.
+      name: "Jobicy — Design Internships",
+      url: "https://jobicy.com/jobs/feed?industry=design-multimedia&type=internship",
+    }
+  ],
+
+  curriculumTracks: {
+    "3D Game Art": [
+      "3d artist", "3d modeler", "modeling", "modeler", "texturing",
+      "texture artist", "rigging", "technical artist", "environment artist",
+      "character artist", "vfx", "animator", "animation",
+      "prop artist", "props artist", "prop modeling",
+      "maya", "blender", "substance painter", "substance", "zbrush",
+      "unreal", "unity", "game engine", "3d",
+    ],
+    "2D Game Art": [
+      "2d artist", "illustrator", "concept artist", "concept art", "ui artist", "ui/ux",
+      "ux designer", "graphic design", "character design",
+      "environment design", "map design", "print production", "pixel art",
+      "2d character", "skybox", "game rules", "layout design", "photoshop",
+      "prop art", "prop design", "props design",
+      "game designer", "game design", "level design", "level designer",
+    ],
+    "Vehicle / Product Design": [
+      "automotive", "vehicle", "product design", "industrial design", "cad", "solidworks", "keyshot",
+    ],
+    "Medical / Simulation": [
+      "medical", "biomedical", "simulation", "prosthetics", "anatomical",
+    ],
+    "Digital Playspaces": [
+      "experimental media", "live media", "alternate controller",
+      "accessibility", "board game design", "tabletop design",
+      "installation", "interactive media", "physical computing",
+      "game designer", "game design", "level design", "level designer",
+      "unreal", "unity",
+    ],
+  },
+
+  manualListings: [
+    {
+        "title": "UI Art Intern",
+        "company": "Double Twizzle Games",
+        "location": "Remote",
+        "url": "https://workwithindies.com/careers/double-twizzle-games-ui-artist",
+        "posted": "2026-07-23",
+        "tags": [
+            "2D Game Art",
+            "Internship"
+        ]
+    },
+    {
+        "title": "Cinematic Art Apprentice",
+        "company": "Firefly Studios",
+        "location": "Remote",
+        "url": "https://workwithindies.com/careers/firefly-studios-cinematic-designer-artist",
+        "posted": "2026-07-23",
+        "tags": [
+            "3D Game Art",
+            "Internship"
+        ]
+    }
+],
+};
+
+const feedEl = document.getElementById('feed');
+const statusEl = document.getElementById('status-text');
+const tagFiltersEl = document.getElementById('tag-filters');
+const searchInput = document.getElementById('search-input');
+const refreshBtn = document.getElementById('refresh-btn');
+
+document.getElementById('page-title').innerHTML = CONFIG.pageTitle;
+
+let allListings = [];
+let activeTag = null;
+
+function isValidJob(title){
+  const t = title.toLowerCase();
+  const hasExcluded = CONFIG.excludedKeywords.some(ex => t.includes(ex));
+  if (hasExcluded) return false;
+  return CONFIG.keywords.some(k => t.includes(k));
+}
+
+function determineJobTypeTag(title){
+  const t = title.toLowerCase();
+  if (t.includes('co-op') || t.includes('co op')) return 'Co-Op';
+  if (t.includes('intern') || t.includes('internship') || t.includes('apprentice') || t.includes('trainee')) return 'Internship';
+  if (t.includes('entry') || t.includes('junior')) return 'Entry-Level';
+  return 'Internship';
+}
+
+function classifyTracks(text){
+  const t = text.toLowerCase();
+  return Object.entries(CONFIG.curriculumTracks)
+    .filter(([, keywords]) => keywords.some(k => t.includes(k)))
+    .map(([trackName]) => trackName);
+}
+
+function rankClass(tags){
+  const t = tags.join(' ').toLowerCase();
+  if (t.includes('co-op') || t.includes('co op')) return 'co-op';
+  if (t.includes('entry-level')) return 'entry';
+  return '';
+}
+
+function rankLabel(tags){
+  const cls = rankClass(tags);
+  if (cls === 'co-op') return 'CO';
+  if (cls === 'entry') return 'EL';
+  return 'IN';
+}
+
+function isRecent(dateStr){ return daysOld(dateStr) <= 14; }
+function isStale(dateStr){ return daysOld(dateStr) > CONFIG.staleAfterDays; }
+function daysOld(dateStr){
+  const posted = new Date(dateStr);
+  return (Date.now() - posted.getTime()) / (1000*60*60*24);
+}
+
+async function fetchGreenhouse(token){
+  try{
+    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${token}/jobs?content=true`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.jobs || [])
+      .filter(j => isValidJob(j.title))
+      .map(j => ({
+        title: j.title,
+        company: prettify(token),
+        location: (j.location && j.location.name) || 'Location TBD',
+        url: j.absolute_url,
+        posted: j.updated_at,
+        tags: [determineJobTypeTag(j.title), ...classifyTracks(j.title)],
+      }));
+  }catch(e){
+    return [];
+  }
+}
+
+async function fetchLever(token){
+  try{
+    const res = await fetch(`https://api.lever.co/v0/postings/${token}?mode=json`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data || [])
+      .filter(j => isValidJob(j.text || ''))
+      .map(j => ({
+        title: j.text,
+        company: prettify(token),
+        location: (j.categories && j.categories.location) || 'Location TBD',
+        url: j.hostedUrl,
+        posted: j.createdAt ? new Date(j.createdAt).toISOString() : new Date().toISOString(),
+        tags: [determineJobTypeTag(j.text || ''), ...classifyTracks(j.text || '')],
+      }));
+  }catch(e){
+    return [];
+  }
+}
+
+async function fetchRSSFeed(feed){
+  try{
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(feed.url)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) return [];
+    
+    const xmlText = await res.text();
+    const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+    const items = [...xml.querySelectorAll('item')];
+    const text = (el, selector) => el.querySelector(selector)?.textContent?.trim() || '';
+
+    return items.map(item => {
+      const rawTitle = text(item, 'title');
+      const link = text(item, 'link') || text(item, 'guid');
+      const pubDate = text(item, 'pubDate');
+      return {
+        title: rawTitle,
+        company: feed.name,
+        location: 'See listing',
+        url: link,
+        posted: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+        tags: [determineJobTypeTag(rawTitle), ...classifyTracks(rawTitle)],
+      };
+    }).filter(j => isValidJob(j.title));
+  }catch(e){
+    // Replaced broad stack traces with a clean console log entry
+    console.warn(`⚠️ [Feed Offline] Could not sync RSS sync payload for ${feed.name}`);
+    return [];
+  }
+}
+
+function prettify(token){
+  return token.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function dedupe(listings){
+  const seen = new Set();
+  return listings.filter(l => {
+    const key = l.url || `${l.title}-${l.company}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildTagFilters(listings){
+  const tagSet = new Set();
+  const hiddenTags = ["Medical / Simulation"];
+
+  listings.forEach(l => l.tags.forEach(t => {
+    if (!hiddenTags.includes(t)) tagSet.add(t);
+  }));
+
+  tagFiltersEl.innerHTML = '';
+  
+  const sortedTags = [...tagSet].sort((a, b) => {
+    const priorities = { "Internship": 1, "Entry-Level": 2, "Co-Op": 3 };
+    const pA = priorities[a] || 99;
+    const pB = priorities[b] || 99;
+    if (pA !== pB) return pA - pB;
+    return a.localeCompare(b);
+  });
+
+  sortedTags.forEach(tag => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = tag;
+    chip.onclick = () => {
+      activeTag = activeTag === tag ? null : tag;
+      render();
+      [...tagFiltersEl.children].forEach(c => c.classList.toggle('active', c.textContent === activeTag));
+    };
+    tagFiltersEl.appendChild(chip);
+  });
+}
+
+function render(){
+  const query = searchInput.value.trim().toLowerCase();
+  let filtered = allListings.filter(l => {
+    const matchesTag = !activeTag || l.tags.includes(activeTag);
+    const haystack = `${l.title} ${l.company} ${l.location}`.toLowerCase();
+    return matchesTag && (!query || haystack.includes(query));
+  });
+
+  filtered.sort((a,b) => new Date(b.posted) - new Date(a.posted));
+  feedEl.innerHTML = '';
+
+  if (filtered.length === 0){
+    feedEl.innerHTML = `<div class="empty">No listings match right now. Try clearing filters or check back soon!</div>`;
+    return;
+  }
+
+  filtered.forEach(l => {
+    const a = document.createElement('a');
+    a.href = l.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = 'card' + (isStale(l.posted) ? ' stale' : '');
+
+    const dateLabel = new Date(l.posted).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+    const newBadge = isRecent(l.posted) ? '<span class="tag new">NEW</span>' : '';
+    const staleBadge = isStale(l.posted) ? `<span class="tag stale-badge">⚠ Verify open</span>` : '';
+
+    a.innerHTML = `
+      <div class="rank ${rankClass(l.tags)}">${rankLabel(l.tags)}</div>
+      <div class="card-body">
+        <p class="card-title">${escapeHtml(l.title)}</p>
+        <p class="card-meta">${escapeHtml(l.company)} · ${escapeHtml(l.location)} · ${dateLabel}</p>
+        <div class="tags">
+          ${l.tags.map(t => {
+            const isType = ["Internship", "Entry-Level", "Co-Op"].includes(t);
+            return `<span class="tag ${isType ? 'type-badge' : ''}">${escapeHtml(t)}</span>`;
+          }).join('')}
+          ${newBadge}
+          ${staleBadge}
+        </div>
+      </div>
+    `;
+    feedEl.appendChild(a);
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function loadAll(){
+  statusEl.textContent = 'Loading listings…';
+  feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
+
+  const [ghResults, leverResults, rssResults] = await Promise.all([
+    Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
+    Promise.all(CONFIG.leverBoards.map(fetchLever)),
+    Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
+  ]);
+
+  const live = [].concat(...ghResults, ...leverResults, ...rssResults).filter(l => isValidJob(l.title));
+  const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
+
+  allListings = dedupe([...manual, ...live]);
+  statusEl.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · ${live.length} pulled live`;
+
+  buildTagFilters(allListings);
+  render();
+}
+
+searchInput.addEventListener('input', render);
+refreshBtn.addEventListener('click', loadAll);
+loadAll();
+</script>
+</body>
+</html>
