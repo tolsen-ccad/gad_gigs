@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Game Art Gig &amp; Contract Quest Board</title>
+<title>Workshops & Apprenticeships — Resources</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -175,8 +175,8 @@
     background: linear-gradient(160deg, var(--amber), #c98d1e);
     color: #241a05;
   }
-  .rank.freelance{ background: linear-gradient(160deg, var(--teal), #1f8a80); color:#052622; }
-  .rank.commission { background: linear-gradient(160deg, var(--purple), #6b46c1); color:#fff; }
+  .rank.co-op{ background: linear-gradient(160deg, var(--teal), #1f8a80); color:#052622; }
+  .rank.entry { background: linear-gradient(160deg, var(--purple), #6b46c1); color:#fff; }
 
   .card-body{ flex:1; min-width:0; }
   .card-title{ font-size: 15px; font-weight:600; margin: 0 0 3px; }
@@ -305,62 +305,64 @@
 <div class="wrap">
   <header>
     <p class="eyebrow">// CCAD - GAME ART &amp; DESIGN</p>
-    <h1 id="page-title">GAME ART GIGS, CONTRACTS, & FREELANCE<br>QUEST BOARD</h1>
-    <p class="sub">Short-term contracts, freelance gigs, and asset commissions to help build portfolios.</p>
-    
+    <h1 id="page-title">SKILL-BUILDING &amp;<br>APPRENTICESHIPS</h1>
+    <p class="sub">Training programs, workshops, and apprenticeship search tools to build your portfolio and skills alongside job hunting. <br>These are curated by hand, not auto-searched — see why below.</p>
+
     <nav class="board-nav">
       <a href="index.html" class="nav-item">⚔ Internships &amp; Entry-level</a>
-      <a href="gigs.html" class="nav-item active">💎 Contract &amp; Gigs</a>
-      <a href="resources.html" class="nav-item">🎓 Workshops &amp; Apprenticeships</a>
-      <a href="#manual-check" class="nav-item">🔍 Also Check These Sites ↓</a>
+      <a href="gigs.html" class="nav-item">💎 Contract &amp; Gigs</a>
+      <a href="resources.html" class="nav-item active">🎓 Workshops &amp; Apprenticeships</a>
     </nav>
   </header>
 
-  <div class="controls" id="tag-filters"></div>
-  <input class="search" id="search-input" type="text" placeholder="Search by title, studio/company, or location…">
-
-  <div class="status">
-    <span id="status-text">Loading listings…</span>
-    <button id="refresh-btn">↻ Refresh</button>
-  </div>
-
-  <div class="feed" id="feed"></div>
-
-  <div class="manual-check" id="manual-check">
-    <h2>// ALSO WORTH CHECKING</h2>
-    <p class="manual-check-sub">These platforms don't allow automated searching (respectfully, their terms of service block it). I recommend checking them out for building your portfolio, there's plenty of opportunities!</p>
+  <div class="manual-check" style="margin-top: 8px; border-top: none; padding-top: 0;">
+    <h2>// SKILL-BUILDING WORKSHOPS &amp; TRAINING</h2>
+    <p class="manual-check-sub">These are paid training platforms (subscriptions or per-course), not job boards — no automated feed exists for "upcoming workshops," so this list is maintained by hand. Great for building portfolio pieces between gigs.</p>
     <div class="manual-check-grid">
       <div class="manual-check-item">
-        <h3>Upwork</h3>
-        <p>Huge freelance marketplace. Apply directly to posted jobs.</p>
+        <h3>The Gnomon Workshop</h3>
+        <p>350+ on-demand workshops in concept art, 3D modeling, texturing, rigging, animation, and VFX, taught by working industry professionals.</p>
         <div class="manual-check-links">
-          <a href="https://www.upwork.com/nx/search/jobs/?q=3d+game+artist" target="_blank" rel="noopener noreferrer">3D Game Artist</a>
-          <a href="https://www.upwork.com/nx/search/jobs/?q=2d+concept+artist" target="_blank" rel="noopener noreferrer">2D Concept Artist</a>
-          <a href="https://www.upwork.com/nx/search/jobs/?q=game+designer" target="_blank" rel="noopener noreferrer">Game Designer</a>
+          <a href="https://www.thegnomonworkshop.com/" target="_blank" rel="noopener noreferrer">Browse Workshops</a>
         </div>
       </div>
       <div class="manual-check-item">
-        <h3>ArtStation Jobs</h3>
-        <p>Industry job board for games, film & media artists. Filter by "Freelance".</p>
+        <h3>Schoolism</h3>
+        <p>Subscription-based online art classes from industry professionals — drawing, painting, character &amp; creature design, and more.</p>
         <div class="manual-check-links">
-          <a href="https://www.artstation.com/jobs" target="_blank" rel="noopener noreferrer">Browse Jobs</a>
+          <a href="https://schoolism.com/" target="_blank" rel="noopener noreferrer">View Courses</a>
         </div>
       </div>
       <div class="manual-check-item">
-        <h3>Polycount</h3>
-        <p>Long-running 3D/2D game art community. Active freelance postings forum.</p>
+        <h3>CG Master Academy (CGMA)</h3>
+        <p>8-week master classes and shorter workshop-style sessions in concept art, illustration, and entertainment design.</p>
         <div class="manual-check-links">
-          <a href="https://polycount.com/categories/freelance-job-postings" target="_blank" rel="noopener noreferrer">Freelance Postings</a>
+          <a href="https://www.cgmasteracademy.com/" target="_blank" rel="noopener noreferrer">View Courses</a>
         </div>
       </div>
       <div class="manual-check-item">
-        <h3>Fiverr</h3>
-        <p>READ ME: there's no public job list to link to. Instead, create a seller profile, then check "Buyer Requests" under the More menu for briefs you can respond to.</p>
-        <p class="manual-check-note">No direct link available — this one requires an account.</p>
+        <h3>Brainstorm School</h3>
+        <p>Online concept art &amp; visual development education, taught by professionals actively working in film, games, and animation.</p>
+        <div class="manual-check-links">
+          <a href="https://brainstormschool.com/" target="_blank" rel="noopener noreferrer">View Courses</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <div class="manual-check">
+    <h2>// APPRENTICESHIP SEARCH</h2>
+    <p class="manual-check-sub">Worth knowing: studio-run apprenticeships (e.g. "Art Apprenticeship," "Design Apprentice") already show up on the <a href="index.html" style="color: var(--amber);">Internships &amp; Entry-level board</a> — "apprentice" has been a matched keyword there from day one. The resource below is for browsing registered apprenticeship programs directly.</p>
+    <div class="manual-check-grid">
+      <div class="manual-check-item">
+        <h3>Apprenticeship.gov Job Finder</h3>
+        <p>U.S. Department of Labor's search tool for registered apprenticeship openings by occupation and location. No automated feed available — search-only.</p>
+        <div class="manual-check-links">
+          <a href="https://www.apprenticeship.gov/apprenticeship-job-finder" target="_blank" rel="noopener noreferrer">Search Apprenticeships</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="dice-roll" aria-hidden="true">
     <svg viewBox="0 0 120 120" width="72" height="72" class="dice-svg">
@@ -635,388 +637,8 @@
   })();
   </script>
 
+</div>
+
 <footer>Sources refresh live from studio APIs & curated boards. <br> Made with love from Tay <3</footer>
-
-<script>
-const CONFIG = {
-  pageTitle: "GAME ART GIG &amp; CONTRACT<br>QUEST BOARD",
-
-  keywords: ["contract", "contractor", "freelance", "freelancer", "commission", "short term", "temporary", "project-based", "hiring", "[hiring]", "looking for artist", "lf artist", "lfa"],
-  excludedKeywords: [
-    "senior", "sr", "lead", "director", "manager", "full time", "permanent", "[for hire]", "l4h",
-    // Off-scope roles that occasionally surface on studio ATS boards
-    // alongside art/design contract postings.
-    "engineer", "engineering", "producer", "production coordinator",
-    "cloud infrastructure", "devops", "site reliability",
-    "backend developer", "backend engineer",
-  ],
-  staleAfterDays: 30,
-
-  // Cleaned to remove deprecated endpoints that throw 404s
-  greenhouseBoards: [
-    "insomniac",          
-    "wildlifestudios",   
-    "gramgamescareers",   
-    "neteasegames",       
-    "cloudchamberen",    
-    "2k",                
-    "rockstargames",      
-    "riotgames",          
-    "epicgames",          
-    "bungie",             
-    "naughtydog",         
-  ],
-
-  // Cleaned to remove deprecated endpoints that throw 404s
-  leverBoards: [
-    "larian",               
-    "dreamgames",           
-    "voodoo",               
-    "blackbirdinteractive", 
-  ],
-
-  rssFeeds: [
-    {
-      name: "Work With Indies",
-      url: "https://workwithindies.com/careers/rss.xml",
-    },
-    {
-      name: "GameJobHunter",
-      url: "https://gamejobhunter.com/feed/", 
-    },
-    {
-      name: "We Work Remotely (Design)",
-      url: "https://weworkremotely.com/categories/remote-design-jobs.rss", 
-    },
-    {
-      // Documented, keyless RSS feed with explicit job-type filtering
-      // (?type=contract / ?type=freelance) — see
-      // https://jobicy.com/jobs-rss-feed. Their fair-use guidance asks
-      // for no more than hourly polling, which a per-visitor page load
-      // comfortably stays under.
-      name: "Jobicy — Contract Design Roles",
-      url: "https://jobicy.com/jobs/feed?industry=design-multimedia&type=contract",
-    },
-    {
-      name: "Jobicy — Freelance Design Roles",
-      url: "https://jobicy.com/jobs/feed?industry=design-multimedia&type=freelance",
-    },
-    {
-      name: "r/gameDevClassifieds",
-      url: "https://www.reddit.com/r/gameDevClassifieds/.rss",
-    },
-    {
-      name: "r/DesignJobs",
-      url: "https://www.reddit.com/r/DesignJobs/.rss",
-    }
-  ],
-
-  curriculumTracks: {
-    "3D Game Art": [
-      "3d artist", "3d modeler", "modeling", "modeler", "texturing",
-      "texture artist", "rigging", "technical artist", "environment artist",
-      "character artist", "vfx", "animator", "animation",
-      "prop artist", "props artist", "prop modeling",
-      "maya", "blender", "substance painter", "substance", "zbrush",
-      "unreal", "unity", "game engine", "3d",
-    ],
-    "2D Game Art": [
-      "2d artist", "illustrator", "concept artist", "concept art", "ui artist", "ui/ux",
-      "ux designer", "graphic design", "character design",
-      "environment design", "map design", "print production", "pixel art",
-      "2d character", "skybox", "game rules", "layout design", "photoshop",
-      "prop art", "prop design", "props design",
-      "game designer", "game design", "level design", "level designer",
-    ],
-    "Vehicle / Product Design": [
-      "automotive", "vehicle", "product design", "industrial design", "cad", "solidworks", "keyshot",
-    ],
-    "Medical / Simulation": [
-      "medical", "biomedical", "simulation", "prosthetics", "anatomical",
-    ],
-    "Digital Playspaces": [
-      "experimental media", "live media", "alternate controller",
-      "accessibility", "board game design", "tabletop design",
-      "installation", "interactive media", "physical computing",
-      "game designer", "game design", "level design", "level designer",
-      "unreal", "unity",
-    ],
-  },
-
-  manualListings: [
-    {
-        "title": "Prop Modeling Commission",
-        "company": "Indie Dev Studio",
-        "location": "Remote",
-        "url": "https://workwithindies.com/",
-        "posted": "2026-07-24",
-        "tags": [
-            "3D Game Art",
-            "Freelance"
-        ]
-    }
-],
-};
-
-const feedEl = document.getElementById('feed');
-const statusEl = document.getElementById('status-text');
-const tagFiltersEl = document.getElementById('tag-filters');
-const searchInput = document.getElementById('search-input');
-const refreshBtn = document.getElementById('refresh-btn');
-
-document.getElementById('page-title').innerHTML = CONFIG.pageTitle;
-
-let allListings = [];
-let activeTag = null;
-
-function isValidJob(title){
-  const t = title.toLowerCase();
-  const hasExcluded = CONFIG.excludedKeywords.some(ex => t.includes(ex));
-  if (hasExcluded) return false;
-  const hasGigKeyword = CONFIG.keywords.some(k => t.includes(k)) || t.includes('[hiring]') || t.includes('lf ');
-  if (!hasGigKeyword) return false;
-  // Positive requirement: the title has to actually match one of the
-  // curriculum tracks below. Without this, any live Greenhouse/Lever/RSS
-  // result containing a word like "contract" or "hiring" passes through
-  // regardless of field — which is how Cloud Infrastructure Engineer,
-  // Producer, and similar off-scope roles were getting in.
-  return classifyTracks(title).length > 0;
-}
-
-function determineJobTypeTag(title){
-  const t = title.toLowerCase();
-  if (t.includes('freelance') || t.includes('freelancer')) return 'Freelance';
-  if (t.includes('commission') || t.includes('commissioning')) return 'Commission';
-  return 'Contract';
-}
-
-function classifyTracks(text){
-  const t = text.toLowerCase();
-  return Object.entries(CONFIG.curriculumTracks)
-    .filter(([, keywords]) => keywords.some(k => t.includes(k)))
-    .map(([trackName]) => trackName);
-}
-
-function rankClass(tags){
-  const t = tags.join(' ').toLowerCase();
-  if (t.includes('freelance')) return 'freelance';
-  if (t.includes('commission')) return 'commission';
-  return '';
-}
-
-function rankLabel(tags){
-  const cls = rankClass(tags);
-  if (cls === 'freelance') return 'FL';
-  if (cls === 'commission') return 'CM';
-  return 'CT';
-}
-
-function isRecent(dateStr){ return daysOld(dateStr) <= 14; }
-function isStale(dateStr){ return daysOld(dateStr) > CONFIG.staleAfterDays; }
-function daysOld(dateStr){
-  const posted = new Date(dateStr);
-  return (Date.now() - posted.getTime()) / (1000*60*60*24);
-}
-
-async function fetchGreenhouse(token){
-  try{
-    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${token}/jobs?content=true`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.jobs || [])
-      .filter(j => isValidJob(j.title))
-      .map(j => ({
-        title: j.title,
-        company: prettify(token),
-        location: (j.location && j.location.name) || 'Location TBD',
-        url: j.absolute_url,
-        posted: j.updated_at,
-        tags: [determineJobTypeTag(j.title), ...classifyTracks(j.title)],
-      }));
-  }catch(e){
-    return [];
-  }
-}
-
-async function fetchLever(token){
-  try{
-    const res = await fetch(`https://api.lever.co/v0/postings/${token}?mode=json`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data || [])
-      .filter(j => isValidJob(j.text || ''))
-      .map(j => ({
-        title: j.text,
-        company: prettify(token),
-        location: (j.categories && j.categories.location) || 'Location TBD',
-        url: j.hostedUrl,
-        posted: j.createdAt ? new Date(j.createdAt).toISOString() : new Date().toISOString(),
-        tags: [determineJobTypeTag(j.text || ''), ...classifyTracks(j.text || '')],
-      }));
-  }catch(e){
-    return [];
-  }
-}
-
-async function fetchRSSFeed(feed){
-  try{
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(feed.url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) return [];
-    
-    const xmlText = await res.text();
-    const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
-    
-    const items = [...xml.querySelectorAll('item')];
-    const entries = [...xml.querySelectorAll('entry')];
-    const targetNodes = items.length ? items : entries;
-
-    return targetNodes.map(node => {
-      const rawTitle = node.querySelector('title')?.textContent?.trim() || '';
-      
-      let link = node.querySelector('link')?.textContent?.trim() || node.querySelector('guid')?.textContent?.trim() || '';
-      if (!link && node.querySelector('link')) {
-        link = node.querySelector('link').getAttribute('href') || '';
-      }
-      
-      const pubDate = node.querySelector('pubDate')?.textContent || node.querySelector('updated')?.textContent || '';
-      
-      return {
-        title: rawTitle,
-        company: feed.name,
-        location: 'Remote / Online',
-        url: link,
-        posted: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-        tags: [determineJobTypeTag(rawTitle), ...classifyTracks(rawTitle)],
-      };
-    }).filter(j => isValidJob(j.title));
-  }catch(e){
-    // Replaced broad stack traces with a clean console log entry
-    console.warn(`⚠️ [Feed Offline] Could not sync RSS sync payload for ${feed.name}`);
-    return [];
-  }
-}
-
-function prettify(token){
-  return token.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
-
-function dedupe(listings){
-  const seen = new Set();
-  return listings.filter(l => {
-    const key = l.url || `${l.title}-${l.company}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-function buildTagFilters(listings){
-  const tagSet = new Set();
-  const hiddenTags = ["Medical / Simulation"];
-
-  listings.forEach(l => l.tags.forEach(t => {
-    if (!hiddenTags.includes(t)) tagSet.add(t);
-  }));
-
-  tagFiltersEl.innerHTML = '';
-  
-  const sortedTags = [...tagSet].sort((a, b) => {
-    const priorities = { "Freelance": 1, "Contract": 2, "Commission": 3 };
-    const pA = priorities[a] || 99;
-    const pB = priorities[b] || 99;
-    if (pA !== pB) return pA - pB;
-    return a.localeCompare(b);
-  });
-
-  sortedTags.forEach(tag => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.textContent = tag;
-    chip.onclick = () => {
-      activeTag = activeTag === tag ? null : tag;
-      render();
-      [...tagFiltersEl.children].forEach(c => c.classList.toggle('active', c.textContent === activeTag));
-    };
-    tagFiltersEl.appendChild(chip);
-  });
-}
-
-function render(){
-  const query = searchInput.value.trim().toLowerCase();
-  let filtered = allListings.filter(l => {
-    const matchesTag = !activeTag || l.tags.includes(activeTag);
-    const haystack = `${l.title} ${l.company} ${l.location}`.toLowerCase();
-    return matchesTag && (!query || haystack.includes(query));
-  });
-
-  filtered.sort((a,b) => new Date(b.posted) - new Date(a.posted));
-  feedEl.innerHTML = '';
-
-  if (filtered.length === 0){
-    feedEl.innerHTML = `<div class="empty">No listings match right now. Try clearing filters or check back soon!</div>`;
-    return;
-  }
-
-  filtered.forEach(l => {
-    const a = document.createElement('a');
-    a.href = l.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.className = 'card' + (isStale(l.posted) ? ' stale' : '');
-
-    const dateLabel = new Date(l.posted).toLocaleDateString(undefined, { month:'short', day:'numeric' });
-    const newBadge = isRecent(l.posted) ? '<span class="tag new">NEW</span>' : '';
-    const staleBadge = isStale(l.posted) ? `<span class="tag stale-badge">⚠ Verify open</span>` : '';
-
-    a.innerHTML = `
-      <div class="rank ${rankClass(l.tags)}">${rankLabel(l.tags)}</div>
-      <div class="card-body">
-        <p class="card-title">${escapeHtml(l.title)}</p>
-        <p class="card-meta">${escapeHtml(l.company)} · ${escapeHtml(l.location)} · ${dateLabel}</p>
-        <div class="tags">
-          ${l.tags.map(t => {
-            const isType = ["Freelance", "Contract", "Commission"].includes(t);
-            return `<span class="tag ${isType ? 'type-badge' : ''}">${escapeHtml(t)}</span>`;
-          }).join('')}
-          ${newBadge}
-          ${staleBadge}
-        </div>
-      </div>
-    `;
-    feedEl.appendChild(a);
-  });
-}
-
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-async function loadAll(){
-  statusEl.textContent = 'Loading listings…';
-  feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
-
-  const [ghResults, leverResults, rssResults] = await Promise.all([
-    Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
-    Promise.all(CONFIG.leverBoards.map(fetchLever)),
-    Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
-  ]);
-
-  const live = [].concat(...ghResults, ...leverResults, ...rssResults).filter(l => isValidJob(l.title));
-  const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
-
-  allListings = dedupe([...manual, ...live]);
-  statusEl.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · ${live.length} pulled live`;
-
-  buildTagFilters(allListings);
-  render();
-}
-
-searchInput.addEventListener('input', render);
-refreshBtn.addEventListener('click', loadAll);
-loadAll();
-</script>
 </body>
 </html>
