@@ -3,16 +3,43 @@ const path = require('path');
 
 const EXCLUDED_KEYWORDS = [
   "senior", "sr", "lead", "director", "manager", "full time", "full-time",
+  "permanent", "[for hire]", "l4h",
   "engineer", "engineering", "producer", "production coordinator",
   "cloud infrastructure", "devops", "site reliability",
   "backend developer", "backend engineer",
 ];
 
 const FREELANCE_TRACKS = {
-  "3D Game Art": ["3d artist", "3d modeler", "modeling", "texturing", "texture", "environment artist", "prop", "asset"],
-  "2D Game Art": ["2d artist", "concept artist", "concept art", "illustrator", "ui artist", "sprite", "2d art", "pixel art", "board game art", "tabletop art", "character design", "prop art", "prop design", "game designer", "game design", "level design", "level designer"],
-  "Vehicle / Product Design": ["cad", "industrial design", "solidworks"],
-  "Digital Playspaces": ["board game", "tabletop", "board game design", "tabletop design", "card game", "game designer", "game design", "level design", "level designer"]
+  "3D Game Art": [
+    "3d artist", "3d modeler", "modeling", "modeler", "texturing",
+    "texture artist", "rigging", "technical artist", "environment artist",
+    "character artist", "vfx", "animator", "animation",
+    "prop artist", "props artist", "prop modeling",
+    "maya", "blender", "substance painter", "substance", "zbrush",
+    "unreal", "unity", "game engine", "3d", "asset",
+  ],
+  "2D Game Art": [
+    "2d artist", "illustrator", "concept artist", "concept art", "ui artist", "ui/ux",
+    "ux designer", "graphic design", "character design",
+    "environment design", "map design", "print production", "pixel art",
+    "2d character", "skybox", "game rules", "layout design", "photoshop",
+    "sprite", "2d art", "board game art", "tabletop art",
+    "prop art", "prop design", "props design",
+    "game designer", "game design", "level design", "level designer",
+  ],
+  "Vehicle / Product Design": [
+    "automotive", "vehicle", "product design", "industrial design", "cad", "solidworks", "keyshot",
+  ],
+  "Medical / Simulation": [
+    "medical", "biomedical", "simulation", "prosthetics", "anatomical",
+  ],
+  "Digital Playspaces": [
+    "experimental media", "live media", "alternate controller",
+    "accessibility", "board game design", "tabletop design", "board game", "tabletop", "card game",
+    "installation", "interactive media", "physical computing",
+    "game designer", "game design", "level design", "level designer",
+    "unreal", "unity",
+  ],
 };
 
 function isSeniorOrFullTime(title) {
