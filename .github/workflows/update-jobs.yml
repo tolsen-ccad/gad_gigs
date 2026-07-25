@@ -1,0 +1,54 @@
+name: Daily Job Board Scraper
+
+on:
+  schedule:
+    - cron: '0 */12 * * *' # Runs twice a day (every 12 hours) safely within free tier limits
+  workflow_dispatch: # Allows manual trigger from GitHub UI whenever you want to force an update
+
+# Prevents concurrent deployment conflicts by queueing runs safely
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  update-board:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write  # Needed to commit changes back to the repo
+      pages: write     # Needed to deploy to GitHub Pages
+      id-token: write  # Needed for secure GitHub Pages authentication
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Job and Gig Scraper Scripts
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: |
+          node fetch-jobs.js
+          node fetch-gigs.js
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'Job Bot'
+          git config --global user.email 'bot@users.noreply.github.com'
+          git add index.html gigs.html
+          git diff --quiet && git diff --cached --quiet || (git commit -m "Auto-update listings and gigs with latest scrape [skip ci]" && git push)
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Bundles the entire root directory (both HTML files)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
