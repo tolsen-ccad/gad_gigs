@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Internships | Entry-level</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #1b1c34;
+    --bg-2: #23244a;
+    --surface: #2a2b57;
+    --surface-hover: #33356b;
+    --border: #3c3e73;
+    --text: #e9e8f5;
+    --text-muted: #a5a3c9;
+    --amber: #f2b84b;
+    --teal: #4fd1c5;
+    --rose: #ef7a9a;
+    --purple: #9f7aea;
+  }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% 0%, var(--bg-2), var(--bg) 60%);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 28px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .wrap{ max-width: 760px; margin: 0 auto; }
+  header{ margin-bottom: 22px; }
+
+  .eyebrow{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--teal);
+    margin: 0 0 10px;
+  }
+
+  h1{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 8px;
+    color: var(--amber);
+    text-shadow: 0 0 18px rgba(242,184,75,0.25);
+  }
+
+  .sub{ color: var(--text-muted); font-size: 14px; margin: 0; }
+
+  .board-nav {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0 12px;
+  }
+
+  .nav-item {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(42, 43, 87, 0.4);
+    border: 1px solid var(--border);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-item:hover {
+    border-color: var(--teal);
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .nav-item.active {
+    background: var(--surface);
+    border-color: var(--amber);
+    color: var(--amber);
+    box-shadow: 0 0 12px rgba(242, 184, 75, 0.15);
+  }
+
+  .controls{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin: 20px 0 4px;
+  }
+
+  .chip{
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .chip:hover{ border-color: var(--teal); color: var(--text); }
+  .chip.active{
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #0c1220;
+    font-weight: 600;
+  }
+
+  .search{
+    width:100%;
+    margin-top: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .search:focus{ outline: none; border-color: var(--amber); }
+
+  .status{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 16px 2px 10px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+  }
+
+  .status button{
+    background:none; border:1px solid var(--border); color: var(--text-muted);
+    border-radius: 8px; padding: 4px 10px; font-size: 12px; cursor:pointer;
+    font-family:inherit;
+  }
+  .status button:hover{ color: var(--text); border-color: var(--teal); }
+
+  .feed{ display:flex; flex-direction:column; gap: 12px; }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display:flex;
+    gap: 14px;
+    align-items:flex-start;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+    text-decoration:none;
+    color: inherit;
+  }
+  .card:hover{
+    border-color: var(--amber);
+    transform: translateY(-1px);
+  }
+
+  .rank{
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    background: linear-gradient(160deg, var(--amber), #c98d1e);
+    color: #241a05;
+  }
+  .rank.co-op{ background: linear-gradient(160deg, var(--teal), #1f8a80); color:#052622; }
+  .rank.entry { background: linear-gradient(160deg, var(--purple), #6b46c1); color:#fff; }
+
+  .card-body{ flex:1; min-width:0; }
+  .card-title{ font-size: 15px; font-weight:600; margin: 0 0 3px; }
+  .card-meta{
+    font-size: 13px; color: var(--text-muted); margin: 0 0 8px;
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .tag.type-badge { border-color: var(--purple); color: var(--purple); background: rgba(159,122,234,0.1); font-weight:600; }
+  .tag.new{ border-color: var(--teal); color: var(--teal); }
+  .tag.stale-badge{
+    border-color: var(--rose);
+    color: var(--rose);
+    background: rgba(239,122,154,0.1);
+  }
+
+  .card.stale{ opacity: 0.6; }
+  .card.stale:hover{ opacity: 0.85; border-color: var(--rose); }
+  .empty, .loading{ text-align:center; padding: 50px 20px; color: var(--text-muted); font-size: 14px; }
+
+  .manual-check{
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+    scroll-margin-top: 20px;
+  }
+  .manual-check h2{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    margin: 0 0 6px;
+  }
+  .manual-check .manual-check-sub{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+  .manual-check-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .manual-check-item{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .manual-check-item h3{
+    font-size: 14px;
+    margin: 0 0 4px;
+    color: var(--text);
+  }
+  .manual-check-item p{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .manual-check-links{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .manual-check-links a{
+    font-size: 12px;
+    color: var(--amber);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: border-color 0.15s ease;
+  }
+  .manual-check-links a:hover{ border-color: var(--amber); }
+  .manual-check-note{
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .dice-roll{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 36px 0 4px;
+  }
+  .dice-svg{ overflow: visible; }
+  .dice-frame{ display: none; }
+  .dice-frame.active{ display: block; }
+  .dice-frame rect{
+    fill: none;
+    stroke: var(--teal);
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+  .dice-frame circle{ fill: var(--teal); }
+  .dice-caption{
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    letter-spacing: 0.03em;
+  }
+
+  footer{
+    margin-top: 30px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align:center;
+    opacity: 0.7;
+  }
+
+  /* Mobile Responsive Navigation (2x2 Grid) */
+@media (max-width: 650px) {
+  .board-nav {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 20px 0 12px;
+  }
+
+  .nav-item {
+    font-size: 12px; /* Slightly smaller font to prevent text clipping */
+    padding: 10px 8px;
+    justify-content: center; /* Centers the icon and text horizontally */
+    text-align: center;
+    line-height: 1.3;
+  }
+}
+
+  .admin-form{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  .form-row{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-row label{
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .form-row .hint{
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .form-row input[type="text"],
+  .form-row input[type="url"],
+  .form-row input[type="date"],
+  .form-row select{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .form-row input:focus,
+  .form-row select:focus{
+    outline: none;
+    border-color: var(--amber);
+  }
+  .board-toggle{
+    display: flex;
+    gap: 10px;
+  }
+  .board-toggle label{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .board-toggle input{ display: none; }
+  .board-toggle input:checked + span{ color: var(--amber); }
+  .board-toggle label:has(input:checked){
+    border-color: var(--amber);
+    background: rgba(242, 184, 75, 0.08);
+  }
+  .track-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+  }
+  .track-check{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .track-check:has(input:checked){
+    border-color: var(--teal);
+    color: var(--text);
+  }
+  .track-check input{ accent-color: var(--teal); }
+  .output-block{
+    margin-top: 8px;
+  }
+  .output-block h2{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    margin: 0 0 10px;
+  }
+  .output-code{
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 13px;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+  }
+  .copy-btn{
+    margin-top: 12px;
+    background: var(--teal);
+    color: #0c1220;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .copy-btn:hover{ opacity: 0.88; }
+  .copy-btn.copied{ background: var(--amber); }
+  .instructions{
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .instructions code{
+    background: var(--bg-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--teal);
+  }
+</style>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">// CCAD - GAME ART &amp; DESIGN</p>
+    <h1 id="page-title">ADMIN —<br>ADD LISTING</h1>
+    <p class="sub">Internal tool — fills out a listing and formats it to match the site's existing style. Nothing here saves automatically; you'll copy the result and paste it into GitHub yourself.</p>
+    <nav class="board-nav">
+      <a href="index.html" class="nav-item">⚔ Internships &amp; Entry-level</a>
+      <a href="gigs.html" class="nav-item">💎 Contract &amp; Gigs</a>
+      <a href="resources.html" class="nav-item">🎓 Workshops &amp; Apprenticeships</a>
+    </nav>
+  </header>
+
+  <form class="admin-form" id="admin-form">
+    <div class="form-row">
+      <label>Which board is this for?</label>
+      <div class="board-toggle">
+        <label>
+          <input type="radio" name="board" value="index" checked>
+          <span>⚔ Internships &amp; Entry-level</span>
+        </label>
+        <label>
+          <input type="radio" name="board" value="gigs">
+          <span>💎 Contract &amp; Gigs</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="title">Title</label>
+      <input type="text" id="title" placeholder="e.g. 3D Environment Art Intern">
+    </div>
+
+    <div class="form-row">
+      <label for="company">Company / Studio</label>
+      <input type="text" id="company" placeholder="e.g. Sample Games Studio">
+    </div>
+
+    <div class="form-row">
+      <label for="location">Location</label>
+      <input type="text" id="location" value="Remote">
+    </div>
+
+    <div class="form-row">
+      <label for="url">Listing URL</label>
+      <input type="url" id="url" placeholder="https://...">
+    </div>
+
+    <div class="form-row">
+      <label for="posted">Posted date</label>
+      <input type="date" id="posted">
+    </div>
+
+    <div class="form-row" id="type-tag-row">
+      <label for="type-tag">Listing type</label>
+      <select id="type-tag"></select>
+    </div>
+
+    <div class="form-row">
+      <label>Curriculum track(s) <span class="hint">— check all that apply</span></label>
+      <div class="track-grid" id="track-grid">
+        <label class="track-check"><input type="checkbox" value="3D Game Art"> 3D Game Art</label>
+        <label class="track-check"><input type="checkbox" value="2D Game Art"> 2D Game Art</label>
+        <label class="track-check"><input type="checkbox" value="Vehicle / Product Design"> Vehicle / Product Design</label>
+        <label class="track-check"><input type="checkbox" value="Medical / Simulation"> Medical / Simulation</label>
+        <label class="track-check"><input type="checkbox" value="Digital Playspaces"> Digital Playspaces</label>
+      </div>
+    </div>
+  </form>
+
+  <div class="output-block">
+    <h2>// FORMATTED ENTRY</h2>
+    <div class="output-code" id="output-code">{ title: "", company: "", location: "Remote", url: "", posted: "", tags: [] },</div>
+    <button class="copy-btn" id="copy-btn">Copy to clipboard</button>
+  </div>
+
+  <div class="instructions">
+    <strong>How to publish this:</strong> copy the line above, then in GitHub open <code>index.html</code> or <code>gigs.html</code> (whichever board you picked), find the <code>manualListings: [</code> array, and paste the new line in anywhere between the opening <code>[</code> and closing <code>]</code>. Commit the change — the site updates automatically once you push.
+  </div>
+
+  <div class="dice-roll" aria-hidden="true">
+    <svg viewBox="0 0 120 120" width="72" height="72" class="dice-svg">
+      <g class="dice-frames">
+      <g class="dice-frame active" data-frame="0">
+        <g transform="translate(0 -0.0) rotate(0.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="1">
+        <g transform="translate(0 -1.2) rotate(15.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="2">
+        <g transform="translate(0 -2.3) rotate(30.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="3">
+        <g transform="translate(0 -3.4) rotate(45.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="30" cy="30" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="4">
+        <g transform="translate(0 -4.5) rotate(60.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="5">
+        <g transform="translate(0 -5.5) rotate(75.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="6">
+        <g transform="translate(0 -6.4) rotate(90.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="7">
+        <g transform="translate(0 -7.1) rotate(105.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="8">
+        <g transform="translate(0 -7.8) rotate(120.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="9">
+        <g transform="translate(0 -8.3) rotate(135.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="10">
+        <g transform="translate(0 -8.7) rotate(150.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="11">
+        <g transform="translate(0 -8.9) rotate(165.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="12">
+        <g transform="translate(0 -9.0) rotate(180.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="13">
+        <g transform="translate(0 -8.9) rotate(195.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="14">
+        <g transform="translate(0 -8.7) rotate(210.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="15">
+        <g transform="translate(0 -8.3) rotate(225.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="16">
+        <g transform="translate(0 -7.8) rotate(240.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="17">
+        <g transform="translate(0 -7.1) rotate(255.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="18">
+        <g transform="translate(0 -6.4) rotate(270.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="19">
+        <g transform="translate(0 -5.5) rotate(285.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="30" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="20">
+        <g transform="translate(0 -4.5) rotate(300.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="21">
+        <g transform="translate(0 -3.4) rotate(315.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="22">
+        <g transform="translate(0 -2.3) rotate(330.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      <g class="dice-frame" data-frame="23">
+        <g transform="translate(0 -1.2) rotate(345.0 60 60)">
+          <rect x="30" y="30" width="60" height="60" rx="11" />
+          <g transform="translate(30 30)">
+            <circle cx="15" cy="15" r="4.2" />
+            <circle cx="45" cy="15" r="4.2" />
+            <circle cx="15" cy="30" r="4.2" />
+            <circle cx="45" cy="30" r="4.2" />
+            <circle cx="15" cy="45" r="4.2" />
+            <circle cx="45" cy="45" r="4.2" />
+          </g>
+        </g>
+      </g>
+      </g>
+    </svg>
+    <p class="dice-caption">// may the odds roll in your favor</p>
+  </div>
+
+  <script>
+  (function(){
+    var frames = document.querySelectorAll('.dice-frame');
+    if (!frames.length) return;
+    var current = 0;
+    setInterval(function(){
+      frames[current].classList.remove('active');
+      current = (current + 1) % frames.length;
+      frames[current].classList.add('active');
+    }, 125); // 24 frames × 125ms = 3s full loop
+  })();
+  </script>
+
+<footer>Sources refresh live from studio APIs & curated boards. <br> Made with love from Tay <3</footer>
+
+<script>
+(function(){
+  const boardRadios = document.querySelectorAll('input[name="board"]');
+  const typeTagSelect = document.getElementById('type-tag');
+  const outputCode = document.getElementById('output-code');
+  const copyBtn = document.getElementById('copy-btn');
+  const postedInput = document.getElementById('posted');
+
+  const TYPE_OPTIONS = {
+    index: ["Internship", "Co-Op", "Entry-Level"],
+    gigs: ["Freelance", "Commission", "Contract"]
+  };
+
+  function populateTypeOptions(){
+    const board = document.querySelector('input[name="board"]:checked').value;
+    const options = TYPE_OPTIONS[board];
+    typeTagSelect.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+  }
+
+  function formatEntry(){
+    const title = document.getElementById('title').value.trim();
+    const company = document.getElementById('company').value.trim();
+    const location = document.getElementById('location').value.trim() || 'Remote';
+    const url = document.getElementById('url').value.trim();
+    const posted = postedInput.value;
+    const typeTag = typeTagSelect.value;
+    const tracks = [...document.querySelectorAll('.track-check input:checked')].map(el => el.value);
+    const tags = [typeTag, ...tracks];
+
+    const obj = {
+      title: title || '(title)',
+      company: company || '(company)',
+      location: location,
+      url: url || 'https://',
+      posted: posted || new Date().toISOString().split('T')[0],
+      tags: tags
+    };
+
+    const tagsStr = JSON.stringify(obj.tags).replace(/,/g, ', ');
+    const line = `{ title: ${JSON.stringify(obj.title)}, company: ${JSON.stringify(obj.company)}, location: ${JSON.stringify(obj.location)}, url: ${JSON.stringify(obj.url)}, posted: ${JSON.stringify(obj.posted)}, tags: ${tagsStr} },`;
+    outputCode.textContent = line;
+  }
+
+  // Default the date field to today
+  postedInput.value = new Date().toISOString().split('T')[0];
+
+  boardRadios.forEach(r => r.addEventListener('change', () => { populateTypeOptions(); formatEntry(); }));
+  document.getElementById('admin-form').addEventListener('input', formatEntry);
+
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(outputCode.textContent).then(() => {
+      copyBtn.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy to clipboard';
+        copyBtn.classList.remove('copied');
+      }, 1500);
+    });
+  });
+
+  populateTypeOptions();
+  formatEntry();
+})();
+</script>
+
+</div>
+</body>
+</html>
