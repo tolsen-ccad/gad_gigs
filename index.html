@@ -323,7 +323,7 @@
 <div class="wrap">
   <header>
     <p class="eyebrow">// CCAD - GAME ART &amp; DESIGN</p>
-    <h1 id="page-title">INTERNSHIP &amp; ENTRY-LEVEL<br>QUEST BOARD</h1>
+    <h1 id="page-title">CAREER &amp; INTERNSHIP<br>QUEST BOARD</h1>
     <p class="sub">Live internships and entry-level opportunities across Game Art & Design sectors. <br>Refreshes with each visit; check back periodically for more opportunities!</p>
     
     <nav class="board-nav">
@@ -378,7 +378,7 @@
       </div>
       <div class="manual-check-item">
         <h3>Handshake</h3>
-        <p>CCAD's official career platform! Internships, entry-level roles, and events posted directly by employers recruiting our students. Requires your CCAD login.</p>
+        <p>CCAD's official career platform — internships, entry-level roles, and events posted directly by employers recruiting our students. Requires your CCAD login.</p>
         <div class="manual-check-links">
           <a href="https://ccad.joinhandshake.com" target="_blank" rel="noopener noreferrer">Open Handshake</a>
         </div>
@@ -683,6 +683,9 @@ const CONFIG = {
     "epicgames",          
     "bungie",             
     "naughtydog",         
+    "hangar13",
+    "mojangab",
+    "tripwireinteractive",
   ],
 
   // Cleaned to remove deprecated endpoints that throw 404s
@@ -691,6 +694,9 @@ const CONFIG = {
     "dreamgames",           
     "voodoo",               
     "blackbirdinteractive", 
+    "frontier",
+    "jagex",
+    "material10",
   ],
 
   rssFeeds: [
@@ -713,6 +719,14 @@ const CONFIG = {
       // which a per-visitor page load comfortably stays under.
       name: "Jobicy — Design Internships",
       url: "https://jobicy.com/jobs/feed?industry=design-multimedia&type=internship",
+    },
+    {
+      // Jobicy has no dedicated "gaming" industry category — this uses
+      // their free-text tag search instead, across ALL categories, so it
+      // can catch game-titled internships that Jobicy filed under a
+      // different industry than design-multimedia.
+      name: "Jobicy — Game Tag Search",
+      url: "https://jobicy.com/jobs/feed?tag=game&type=internship",
     }
   ],
 
@@ -758,17 +772,6 @@ const CONFIG = {
         "tags": [
             "2D Game Art",
             "Internship"
-        ]
-    },
-    {
-        "title": "Entry-Level Game Programmer",
-        "company": "Toyz Electronics",
-        "location": "Hybrid - St. Louis",
-        "url": "https://app.joinhandshake.com/jobs/11229030?searchId=b529fe30-b4d3-46f9-bf7b-503d40a2010e",
-        "posted": "2026-07-27",
-        "tags": [
-            "Entry-Level",
-            "Digital Playspaces"
         ]
     },
     {

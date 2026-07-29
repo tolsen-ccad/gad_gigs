@@ -76,7 +76,9 @@ async function fetchGoogleJobs() {
     
     if (!data.jobs_results) return [];
 
-    const filteredJobs = data.jobs_results.filter(job => !isSeniorOrManagement(job.title));
+    const filteredJobs = data.jobs_results
+      .filter(job => !isSeniorOrManagement(job.title))
+      .filter(job => classifyTracks(job.title).length > 0);
 
     return filteredJobs.map(job => {
       const typeTag = determineJobTypeTag(job.title);
