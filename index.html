@@ -699,6 +699,11 @@ const CONFIG = {
     "material10",
   ],
 
+  recruiteeBoards: [
+    "11bitstudios",
+    "lucidgames",
+  ],
+
   rssFeeds: [
     {
       name: "Work With Indies",
@@ -882,6 +887,32 @@ async function fetchLever(token){
   }
 }
 
+async function fetchRecruitee(token){
+  try{
+    // Public, keyless Careers Site API — no auth required.
+    // https://docs.recruitee.com/reference/intro-to-careers-site-api
+    const res = await fetch(`https://${token}.recruitee.com/api/offers`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const offers = data.offers || [];
+    if (offers.length && !offers[0].title){
+      console.warn(`Recruitee board "${token}" returned data in an unexpected shape — check the response manually.`);
+    }
+    return offers
+      .filter(o => isValidJob(o.title || ''))
+      .map(o => ({
+        title: o.title,
+        company: prettify(token),
+        location: o.city || o.location || 'Location TBD',
+        url: o.careers_url || `https://${token}.recruitee.com/o/${o.slug || ''}`,
+        posted: o.published_at || o.created_at || new Date().toISOString(),
+        tags: [determineJobTypeTag(o.title || ''), ...classifyTracks(o.title || '')],
+      }));
+  }catch(e){
+    return [];
+  }
+}
+
 async function fetchRSSFeed(feed){
   try{
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(feed.url)}`;
@@ -1014,13 +1045,14 @@ async function loadAll(){
   statusEl.textContent = 'Loading listings…';
   feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
 
-  const [ghResults, leverResults, rssResults] = await Promise.all([
+  const [ghResults, leverResults, recruiteeResults, rssResults] = await Promise.all([
     Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
     Promise.all(CONFIG.leverBoards.map(fetchLever)),
+    Promise.all(CONFIG.recruiteeBoards.map(fetchRecruitee)),
     Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
   ]);
 
-  const live = [].concat(...ghResults, ...leverResults, ...rssResults).filter(l => isValidJob(l.title));
+  const live = [].concat(...ghResults, ...leverResults, ...recruiteeResults, ...rssResults).filter(l => isValidJob(l.title));
   const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
 
   allListings = dedupe([...manual, ...live]);
