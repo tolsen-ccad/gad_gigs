@@ -749,7 +749,7 @@ const CONFIG = {
       "ux designer", "graphic design", "character design",
       "environment design", "map design", "print production", "pixel art",
       "2d character", "skybox", "game rules", "layout design", "photoshop",
-      "prop art", "prop design", "props design",
+      "board game art", "tabletop art", "prop art", "prop design", "props design",
       "game designer", "game design", "level design", "level designer",
     ],
     "Vehicle / Product Design": [
@@ -760,7 +760,7 @@ const CONFIG = {
     ],
     "Digital Playspaces": [
       "experimental media", "live media", "alternate controller",
-      "accessibility", "board game design", "tabletop design",
+      "accessibility", "board game design", "tabletop design", "board game", "tabletop",
       "installation", "interactive media", "physical computing",
       "game designer", "game design", "level design", "level designer",
       "unreal", "unity",
@@ -808,7 +808,14 @@ function isValidJob(title){
   const t = title.toLowerCase();
   const hasExcluded = CONFIG.excludedKeywords.some(ex => t.includes(ex));
   if (hasExcluded) return false;
-  return CONFIG.keywords.some(k => t.includes(k));
+  const hasLevelKeyword = CONFIG.keywords.some(k => t.includes(k));
+  if (!hasLevelKeyword) return false;
+  // Positive requirement: the title has to actually match one of the
+  // curriculum tracks below. Without this, any live Greenhouse/Lever/
+  // Recruitee/RSS result containing a word like "intern" or "junior"
+  // passes through regardless of department — which is how Marketing
+  // Intern, HR Intern, and similar off-scope roles were getting in.
+  return classifyTracks(title).length > 0;
 }
 
 function determineJobTypeTag(title){
