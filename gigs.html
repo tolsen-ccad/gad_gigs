@@ -709,15 +709,25 @@ const CONFIG = {
   leverBoards: [
     "larian",               
     "dreamgames",           
-    "voodoo",               
     "blackbirdinteractive", 
     "bhvr", // Behaviour Interactive — Dead by Daylight, confirmed via tracker sheet
+    // Removed (404 — no longer on Lever, moved to custom career site):
+    // "voodoo"
   ],
 
   recruiteeBoards: [
     "11bitstudios",
     "lucidgames",
     "framestore", // major VFX studio, confirmed via tracker sheet
+  ],
+
+  smartRecruitersBoards: [
+    "Ubisoft",
+    "PeopleCanFly",
+  ],
+
+  ashbyBoards: [
+    "arenanet",
   ],
 
   googleSheets: [
@@ -942,6 +952,59 @@ async function fetchRecruitee(token){
   }
 }
 
+async function fetchSmartRecruiters(companyId){
+  try{
+    // Public Posting API — no auth, but tier-dependent: some companies on
+    // lower SmartRecruiters plans don't have this feed enabled, in which
+    // case this just returns empty rather than erroring.
+    const res = await fetchViaProxy(`https://api.smartrecruiters.com/v1/companies/${companyId}/postings`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const postings = data.content || [];
+    return postings
+      .filter(j => isValidJob(j.name || ''))
+      .map(j => {
+        const city = j.location?.city || '';
+        const country = j.location?.country || '';
+        const remote = j.location?.remote ? 'Remote' : '';
+        return {
+          title: j.name,
+          company: prettify(companyId),
+          location: [city, country, remote].filter(Boolean).join(', ') || 'Location TBD',
+          url: j.postingUrl || j.ref || '#',
+          posted: j.releasedDate || new Date().toISOString(),
+          tags: [determineJobTypeTag(j.name || ''), ...classifyTracks(j.name || '')],
+        };
+      });
+  }catch(e){
+    return [];
+  }
+}
+
+async function fetchAshby(companyId){
+  try{
+    // Ashby's own docs note this lightweight endpoint isn't guaranteed
+    // to work directly from a browser, so it's routed through the same
+    // proxy helper as RSS/Sheets rather than fetched directly.
+    const res = await fetchViaProxy(`https://api.ashbyhq.com/posting-api/job-board/${companyId}?includeCompensation=true`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    return jobs
+      .filter(j => isValidJob(j.title || ''))
+      .map(j => ({
+        title: j.title,
+        company: prettify(companyId),
+        location: j.location || j.locationName || j.workplaceType || 'Location TBD',
+        url: j.jobUrl || j.applyUrl || '#',
+        posted: j.publishedAt || new Date().toISOString(),
+        tags: [determineJobTypeTag(j.title || ''), ...classifyTracks(j.title || '')],
+      }));
+  }catch(e){
+    return [];
+  }
+}
+
 // Minimal CSV parser handling quoted fields — including commas and
 // literal newlines inside quotes (e.g. a "Software" cell listing
 // "Photoshop, Illustrator, After Effects" as one field).
@@ -969,8 +1032,7 @@ function parseCSV(text){
 async function fetchGoogleSheet(sheet){
   try{
     const csvUrl = `https://docs.google.com/spreadsheets/d/${sheet.sheetId}/export?format=csv&gid=${sheet.gid}`;
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`;
-    const res = await fetch(proxyUrl);
+    const res = await fetchViaProxy(csvUrl);
     if (!res.ok) return [];
     const text = await res.text();
     const rows = parseCSV(text);
@@ -1035,8 +1097,7 @@ async function fetchGoogleSheet(sheet){
 
 async function fetchRSSFeed(feed){
   try{
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(feed.url)}`;
-    const res = await fetch(proxyUrl);
+    const res = await fetchViaProxy(feed.url);
     if (!res.ok) return [];
     
     const xmlText = await res.text();
@@ -1070,6 +1131,19 @@ async function fetchRSSFeed(feed){
     console.warn(`⚠️ [Feed Offline] Could not sync RSS sync payload for ${feed.name}`);
     return [];
   }
+}
+
+// corsproxy.io's free tier now requires the `url=` query parameter
+// (their old bare-append format increasingly returns 404/401), and their
+// free-tier policy has tightened multiple times. AllOrigins is used as a
+// fallback if corsproxy.io fails for any reason, so one proxy's outage or
+// policy change doesn't take down every cross-origin source at once.
+async function fetchViaProxy(targetUrl){
+  try{
+    const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`);
+    if (res.ok) return res;
+  }catch(e){ /* fall through to backup */ }
+  return fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
 }
 
 function prettify(token){
@@ -1173,15 +1247,17 @@ async function loadAll(){
   statusEl.textContent = 'Loading listings…';
   feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
 
-  const [ghResults, leverResults, recruiteeResults, sheetResults, rssResults] = await Promise.all([
+  const [ghResults, leverResults, recruiteeResults, smartRecruitersResults, ashbyResults, sheetResults, rssResults] = await Promise.all([
     Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
     Promise.all(CONFIG.leverBoards.map(fetchLever)),
     Promise.all(CONFIG.recruiteeBoards.map(fetchRecruitee)),
+    Promise.all(CONFIG.smartRecruitersBoards.map(fetchSmartRecruiters)),
+    Promise.all(CONFIG.ashbyBoards.map(fetchAshby)),
     Promise.all(CONFIG.googleSheets.map(fetchGoogleSheet)),
     Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
   ]);
 
-  const live = [].concat(...ghResults, ...leverResults, ...recruiteeResults, ...sheetResults, ...rssResults).filter(l => isValidJob(l.title));
+  const live = [].concat(...ghResults, ...leverResults, ...recruiteeResults, ...smartRecruitersResults, ...ashbyResults, ...sheetResults, ...rssResults).filter(l => isValidJob(l.title));
   const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
 
   allListings = dedupe([...manual, ...live]);
