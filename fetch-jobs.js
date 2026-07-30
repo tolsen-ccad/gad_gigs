@@ -1,151 +1,190 @@
 const fs = require('fs');
-const path = require('path');
 
-// Keywords that must NOT be present in the title (blocks senior/management roles)
-const EXCLUDED_KEYWORDS = [
-  "senior", "sr", "lead", "director", "manager", 
-  "principal", "staff", "head of", "chief", "expert", "experienced"
+// Helper to scan text and safely inject the Remote tag
+function applyRemoteTag(tags, location, title) {
+  const combinedText = `${location} ${title}`.toLowerCase();
+  const cleanTags = [...new Set(tags)];
+  
+  if (combinedText.includes('remote') || combinedText.includes('wfh') || combinedText.includes('anywhere')) {
+    if (!cleanTags.includes('Remote')) {
+      cleanTags.push('Remote');
+    }
+  }
+  return cleanTags;
+}
+
+// Manual adjustments or studios without open API streams
+const MANUAL_JOBS = [
+  {
+    title: "Junior Technical Artist",
+    company: "Believer Games",
+    location: "Los Angeles, CA (Hybrid)",
+    url: "https://www.believer.gg/careers",
+    posted: new Date().toISOString(),
+    tags: ["Full-Time", "Technical Art"]
+  }
 ];
 
-const CURRICULUM_TRACKS = {
-  "3D Game Art": [
-    "3d artist", "3d modeler", "modeling", "modeler", "texturing",
-    "texture artist", "rigging", "technical artist", "environment artist",
-    "character artist", "vfx", "animator", "animation",
-    "prop artist", "props artist", "prop modeling",
-    "maya", "blender", "substance painter", "substance", "zbrush",
-    "unreal", "unity", "game engine", "3d"
-  ],
-  "2D Game Art": [
-    "2d artist", "illustrator", "concept artist", "concept art", "ui artist", "ui/ux",
-    "ux designer", "graphic design", "character design",
-    "environment design", "map design", "print production", "pixel art",
-    "2d character", "skybox", "game rules", "layout design", "photoshop",
-    "board game art", "tabletop art", "prop art", "prop design", "props design",
-    "game designer", "game design", "level design", "level designer"
-  ],
-  "Vehicle / Product Design": [
-    "automotive", "vehicle", "product design", "industrial design", "cad", "solidworks", "keyshot"
-  ],
-  "Medical / Simulation": [
-    "medical", "biomedical", "simulation", "prosthetics", "anatomical"
-  ],
-  "Digital Playspaces": [
-    "experimental media", "live media", "alternate controller",
-    "accessibility", "board game design", "tabletop design", "board game", "tabletop",
-    "installation", "interactive media", "physical computing",
-    "game designer", "game design", "level design", "level designer",
-    "unreal", "unity"
-  ]
-};
+// --- STUDIO TARGET CONFIGURATIONS ---
+// Simply add a row to expand your tracking footprint instantly!
 
-function isSeniorOrManagement(title) {
-  const t = title.toLowerCase();
-  return EXCLUDED_KEYWORDS.some(keyword => t.includes(keyword));
-}
+const GREENHOUSE_TARGETS = [
+  { id: "your_board_token", name: "Greenhouse Partner" }
+];
 
-function determineJobTypeTag(title) {
-  const t = title.toLowerCase();
-  if (t.includes('co-op') || t.includes('co op')) return 'Co-Op';
-  if (t.includes('intern') || t.includes('internship') || t.includes('apprentice') || t.includes('trainee')) return 'Internship';
-  if (t.includes('entry') || t.includes('junior')) return 'Entry-Level';
-  return 'Internship';
-}
+const LEVER_TARGETS = [
+  { id: "your_lever_token", name: "Lever Partner" }
+];
 
-function classifyTracks(title) {
-  const t = title.toLowerCase();
-  return Object.entries(CURRICULUM_TRACKS)
-    .filter(([, keywords]) => keywords.some(k => t.includes(k)))
-    .map(([trackName]) => trackName);
-}
+const SMARTRECRUITERS_TARGETS = [
+  { id: "Ubisoft", name: "Ubisoft" },
+  { id: "PeopleCanFly", name: "People Can Fly" }
+];
 
-async function fetchGoogleJobs() {
-  const apiKey = process.env.SERPAPI_KEY;
-  if (!apiKey) {
-    console.log("No SerpApi key found, skipping automated external fetch.");
-    return [];
-  }
+const ASHBY_TARGETS = [
+  { id: "arenanet", name: "ArenaNet" }
+];
 
-  // OPTIMIZED QUERY: Added board game, tabletop, and 2d game art entry targets
-  const query = "3d artist intern OR 3d modeler entry level OR junior 3d designer OR product design junior OR 3d art apprentice OR game design apprentice OR board game intern OR tabletop junior OR 2d game art intern OR board game designer entry level OR character design intern OR concept artist junior OR concept art intern OR prop artist intern OR game designer entry level OR level design intern OR pixel artist intern OR pixel art junior";
-  const url = `https://serpapi.com/search.json?engine=google_jobs&q=${encodeURIComponent(query)}&api_key=${apiKey}`;
+// --- API IMPLEMENTATION MODULES ---
 
+async function fetchGreenhouse(companyId, companyName) {
   try {
-    const response = await fetch(url);
-    const data = await response.json();
+    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${companyId}/jobs`);
+    if (!res.ok) return [];
+    const data = await res.json();
     
-    if (!data.jobs_results) return [];
-
-    const filteredJobs = data.jobs_results
-      .filter(job => !isSeniorOrManagement(job.title))
-      .filter(job => classifyTracks(job.title).length > 0);
-
-    return filteredJobs.map(job => {
-      const typeTag = determineJobTypeTag(job.title);
-      const tracks = classifyTracks(job.title);
-      
+    return (data.jobs || []).map(j => {
+      const loc = j.location?.name || "Remote / US";
       return {
-        title: job.title,
-        company: job.company_name,
-        location: job.location || "Remote",
-        url: job.related_links?.[0]?.link || job.apply_options?.[0]?.link || "https://www.google.com/search?q=" + encodeURIComponent(job.title),
-        posted: new Date().toISOString().split('T')[0],
-        tags: [typeTag, ...tracks]
+        title: j.title,
+        company: companyName,
+        location: loc,
+        url: j.absolute_url,
+        posted: j.updated_at || new Date().toISOString(),
+        tags: applyRemoteTag(["Greenhouse", "Entry-Level"], loc, j.title)
       };
     });
-  } catch (error) {
-    console.error("Error fetching jobs:", error);
+  } catch (e) {
+    console.error(`Error fetching Greenhouse for ${companyName}:`, e);
     return [];
   }
 }
 
-async function updateBoard() {
-  const newJobs = await fetchGoogleJobs();
-  const indexPath = path.join(__dirname, 'index.html');
-  
-  if (!fs.existsSync(indexPath)) {
-    console.error(`Could not find index.html at expected path: ${indexPath}`);
-    return;
-  }
-
-  let indexHtml = fs.readFileSync(indexPath, 'utf8');
-  const regex = /manualListings:\s*\[([\s\S]*?)\]\s*,/;
-  const match = indexHtml.match(regex);
-
-  if (!match) {
-    console.error("Could not find the 'manualListings' block inside index.html configuration.");
-    return;
-  }
-
-  let existingListings = [];
+async function fetchLever(companyId, companyName) {
   try {
-    existingListings = new Function(`return [${match[1]}]`)();
+    const res = await fetch(`https://api.lever.co/v0/postings/${companyId}?mode=json`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    
+    return (data || []).map(j => {
+      const loc = j.categories?.location || "US Nationwide";
+      return {
+        title: j.title,
+        company: companyName,
+        location: loc,
+        url: j.hostedUrl,
+        posted: new Date(j.createdAt).toISOString(),
+        tags: applyRemoteTag(["Lever", "Internship"], loc, j.title)
+      };
+    });
   } catch (e) {
-    console.error("Error parsing existing manual listings within HTML source code:", e);
-    return;
+    console.error(`Error fetching Lever for ${companyName}:`, e);
+    return [];
   }
-
-  const combinedListings = [...existingListings];
-  newJobs.forEach(newJob => {
-    const spaceDeduplicated = combinedListings.some(job => job.url === newJob.url);
-    if (!spaceDeduplicated) {
-      combinedListings.push(newJob);
-    }
-  });
-
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - 60);
-
-  const cleanActiveListings = combinedListings.filter(job => {
-    const postDate = new Date(job.posted);
-    return postDate >= cutoffDate;
-  });
-
-  const formattedArrayString = JSON.stringify(cleanActiveListings, null, 4);
-  const updatedHtml = indexHtml.replace(regex, `manualListings: ${formattedArrayString},`);
-  
-  fs.writeFileSync(indexPath, updatedHtml, 'utf8');
-  console.log(`Successfully synced and updated index.html. Total items in manualListings: ${cleanActiveListings.length}`);
 }
 
-updateBoard();
+async function fetchSmartRecruiters(companyId, companyName) {
+  try {
+    const res = await fetch(`https://api.smartrecruiters.com/v1/companies/${companyId}/postings`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const postings = data.content || [];
+    
+    return postings.map(j => {
+      const isRemote = j.location?.remote ? "Remote" : "";
+      const city = j.location?.city || "";
+      const country = j.location?.country || "";
+      const locStr = [city, country, isRemote].filter(Boolean).join(", ") || "US / Global";
+      
+      return {
+        title: j.name,
+        company: companyName,
+        location: locStr,
+        url: j.postingUrl,
+        posted: j.releasedDate || new Date().toISOString(),
+        tags: applyRemoteTag(["SmartRecruiters", "Entry-Level"], locStr, j.name)
+      };
+    });
+  } catch (e) {
+    console.error(`Error fetching SmartRecruiters for ${companyName}:`, e);
+    return [];
+  }
+}
+
+async function fetchAshby(companyId, companyName) {
+  try {
+    const res = await fetch(`https://api.ashbyhq.com/posting-api/job-board/${companyId}?includeCompensation=true`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    
+    return jobs.map(j => {
+      const locStr = j.location || j.locationName || `${j.workplaceType || "Global"}`;
+      return {
+        title: j.title,
+        company: companyName,
+        location: locStr,
+        url: j.jobUrl,
+        posted: j.publishedAt || new Date().toISOString(),
+        tags: applyRemoteTag(["Ashby", j.employmentType || "Entry-Level"], locStr, j.title)
+      };
+    });
+  } catch (e) {
+    console.error(`Error fetching Ashby for ${companyName}:`, e);
+    return [];
+  }
+}
+
+// --- MAIN RUN ORCHESTRATOR ---
+
+async function main() {
+  console.log("Starting Server-Side Multi-ATS Scanning Loop...");
+  let aggregatedJobs = [];
+
+  // 1. Process Greenhouse Targets
+  for (const target of GREENHOUSE_TARGETS) {
+    const jobs = await fetchGreenhouse(target.id, target.name);
+    aggregatedJobs.push(...jobs);
+  }
+
+  // 2. Process Lever Targets
+  for (const target of LEVER_TARGETS) {
+    const jobs = await fetchLever(target.id, target.name);
+    aggregatedJobs.push(...jobs);
+  }
+
+  // 3. Process SmartRecruiters Targets
+  for (const target of SMARTRECRUITERS_TARGETS) {
+    const jobs = await fetchSmartRecruiters(target.id, target.name);
+    aggregatedJobs.push(...jobs);
+  }
+
+  // 4. Process Ashby Targets
+  for (const target of ASHBY_TARGETS) {
+    const jobs = await fetchAshby(target.id, target.name);
+    aggregatedJobs.push(...jobs);
+  }
+  
+  // Clean manual entries through the tag engine
+  const processedManual = MANUAL_JOBS.map(j => ({
+    ...j,
+    tags: applyRemoteTag(j.tags, j.location, j.title)
+  }));
+  
+  const allJobs = [...processedManual, ...aggregatedJobs];
+  
+  fs.writeFileSync('jobs.json', JSON.stringify(allJobs, null, 2));
+  console.log(`Successfully generated jobs.json with ${allJobs.length} live listings.`);
+}
+
+main();
