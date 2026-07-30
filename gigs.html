@@ -697,6 +697,12 @@ const CONFIG = {
     "epicgames",          
     "bungie",             
     "naughtydog",         
+    "hangar13",
+    "mojangab",
+    "tripwireinteractive",
+    "highdive",             // confirmed via real listing URLs in the tracker sheet
+    "turtlerockstudios",    // confirmed via real listing URL — Back 4 Blood, Evolve
+    "sonypicturesimageworks", // mostly film/VFX, not games-primary — kept since existing filters will naturally exclude non-matching roles
   ],
 
   // Cleaned to remove deprecated endpoints that throw 404s
@@ -705,6 +711,25 @@ const CONFIG = {
     "dreamgames",           
     "voodoo",               
     "blackbirdinteractive", 
+    "bhvr", // Behaviour Interactive — Dead by Daylight, confirmed via tracker sheet
+  ],
+
+  recruiteeBoards: [
+    "11bitstudios",
+    "lucidgames",
+    "framestore", // major VFX studio, confirmed via tracker sheet
+  ],
+
+  googleSheets: [
+    {
+      // Community-maintained, actively-updated tracker covering
+      // Animation/VFX/Games — filtered below to rows whose Job Title or
+      // Notes mention contract/freelance terms, AND a curriculum-track
+      // match, so film-VFX-only and permanent-role rows don't come through.
+      name: "Animation/VFX/Game Industry Job Postings",
+      sheetId: "1eR2oAXOuflr8CZeGoz3JTrsgNj3KuefbdXJOmNtjEVM",
+      gid: "0",
+    },
   ],
 
   rssFeeds: [
@@ -891,6 +916,123 @@ async function fetchLever(token){
   }
 }
 
+async function fetchRecruitee(token){
+  try{
+    // Public, keyless Careers Site API — no auth required.
+    // https://docs.recruitee.com/reference/intro-to-careers-site-api
+    const res = await fetch(`https://${token}.recruitee.com/api/offers`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const offers = data.offers || [];
+    if (offers.length && !offers[0].title){
+      console.warn(`Recruitee board "${token}" returned data in an unexpected shape — check the response manually.`);
+    }
+    return offers
+      .filter(o => isValidJob(o.title || ''))
+      .map(o => ({
+        title: o.title,
+        company: prettify(token),
+        location: o.city || o.location || 'Location TBD',
+        url: o.careers_url || `https://${token}.recruitee.com/o/${o.slug || ''}`,
+        posted: o.published_at || o.created_at || new Date().toISOString(),
+        tags: [determineJobTypeTag(o.title || ''), ...classifyTracks(o.title || '')],
+      }));
+  }catch(e){
+    return [];
+  }
+}
+
+// Minimal CSV parser handling quoted fields — including commas and
+// literal newlines inside quotes (e.g. a "Software" cell listing
+// "Photoshop, Illustrator, After Effects" as one field).
+function parseCSV(text){
+  const rows = [];
+  let row = [], cur = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i], next = text[i + 1];
+    if (inQuotes){
+      if (c === '"' && next === '"'){ cur += '"'; i++; }
+      else if (c === '"'){ inQuotes = false; }
+      else { cur += c; }
+    } else {
+      if (c === '"'){ inQuotes = true; }
+      else if (c === ','){ row.push(cur); cur = ''; }
+      else if (c === '\n'){ row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (c === '\r'){ /* skip — paired \n handles the line break */ }
+      else { cur += c; }
+    }
+  }
+  if (cur.length || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+
+async function fetchGoogleSheet(sheet){
+  try{
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheet.sheetId}/export?format=csv&gid=${sheet.gid}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) return [];
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    // Hand-maintained community spreadsheet, not a formal API — the
+    // header row's position can shift, so it's found by content rather
+    // than a hardcoded row number.
+    const headerRowIndex = rows.findIndex(r => r.some(cell => cell.trim().toLowerCase().startsWith('studio')));
+    if (headerRowIndex === -1){
+      console.warn(`Google Sheet "${sheet.name}" — no header row starting with "Studio" found. The sheet's layout may have changed.`);
+      return [];
+    }
+
+    const headers = rows[headerRowIndex].map(h => h.trim().toLowerCase());
+    const find = (matchFn) => headers.findIndex(matchFn);
+    const studioCol = find(h => h.startsWith('studio'));
+    const titleCol = find(h => h.includes('job title'));
+    const cityCol = find(h => h === 'city');
+    const countryCol = find(h => h.includes('country'));
+    const dateCol = find(h => h.includes('date'));
+    const urlCol = find(h => h.includes('source') || h.includes('contact'));
+    const notesCol = find(h => h.includes('notes'));
+
+    if ([studioCol, titleCol, urlCol].some(i => i === -1)){
+      console.warn(`Google Sheet "${sheet.name}" — one or more expected columns (Studio/Job Title/Source) weren't found. Check the sheet's current column headers.`);
+      return [];
+    }
+
+    return rows.slice(headerRowIndex + 1)
+      .filter(r => r[titleCol] && r[studioCol])
+      .filter(r => {
+        // Contract/freelance duration ("4-month contract", "6-7 weeks")
+        // usually lives in Notes, not the Job Title, so both are checked
+        // together against the gig-type keywords.
+        const searchText = `${r[titleCol]} ${notesCol > -1 ? r[notesCol] : ''}`.toLowerCase();
+        return CONFIG.keywords.some(k => searchText.includes(k));
+      })
+      .filter(r => classifyTracks(r[titleCol]).length > 0)
+      .map(r => {
+        const location = [cityCol > -1 ? r[cityCol] : '', countryCol > -1 ? r[countryCol] : '']
+          .filter(Boolean).join(', ') || 'See listing';
+        let posted = new Date().toISOString();
+        if (dateCol > -1 && r[dateCol]){
+          const d = new Date(r[dateCol]);
+          if (!isNaN(d.getTime())) posted = d.toISOString();
+        }
+        const urlMatch = (r[urlCol] || '').match(/https?:\/\/\S+/);
+        return {
+          title: r[titleCol].trim(),
+          company: r[studioCol].trim(),
+          location,
+          url: urlMatch ? urlMatch[0] : '#',
+          posted,
+          tags: [determineJobTypeTag(r[titleCol]), ...classifyTracks(r[titleCol])],
+        };
+      });
+  }catch(e){
+    console.warn(`Google Sheet "${sheet.name}" failed to load:`, e);
+    return [];
+  }
+}
+
 async function fetchRSSFeed(feed){
   try{
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(feed.url)}`;
@@ -1031,13 +1173,15 @@ async function loadAll(){
   statusEl.textContent = 'Loading listings…';
   feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
 
-  const [ghResults, leverResults, rssResults] = await Promise.all([
+  const [ghResults, leverResults, recruiteeResults, sheetResults, rssResults] = await Promise.all([
     Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
     Promise.all(CONFIG.leverBoards.map(fetchLever)),
+    Promise.all(CONFIG.recruiteeBoards.map(fetchRecruitee)),
+    Promise.all(CONFIG.googleSheets.map(fetchGoogleSheet)),
     Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
   ]);
 
-  const live = [].concat(...ghResults, ...leverResults, ...rssResults).filter(l => isValidJob(l.title));
+  const live = [].concat(...ghResults, ...leverResults, ...recruiteeResults, ...sheetResults, ...rssResults).filter(l => isValidJob(l.title));
   const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
 
   allListings = dedupe([...manual, ...live]);
