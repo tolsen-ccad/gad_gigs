@@ -1025,7 +1025,7 @@ function parseCSV(text){
 async function fetchGoogleSheet(sheet){
   try{
     const csvUrl = `https://docs.google.com/spreadsheets/d/${sheet.sheetId}/export?format=csv&gid=${sheet.gid}`;
-    const res = await fetchViaProxy(csvUrl);
+    const res = await fetchViaProxy(csvUrl, true);
     if (!res.ok) return [];
     const text = await res.text();
     const rows = parseCSV(text);
@@ -1121,12 +1121,26 @@ async function fetchRSSFeed(feed){
 // free-tier policy has tightened multiple times. AllOrigins is used as a
 // fallback if corsproxy.io fails for any reason, so one proxy's outage or
 // policy change doesn't take down every cross-origin source at once.
-async function fetchViaProxy(targetUrl){
+async function fetchViaProxy(targetUrl, preferBackup = false){
+  const corsproxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
+  const backupUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+  if (preferBackup){
+    // Google Sheets export URLs have repeatedly failed specifically on
+    // corsproxy.io (likely a deliberate restriction — proxying
+    // docs.google.com is a common scraping-abuse pattern) even after the
+    // URL format was corrected. Skip straight to the backup for these
+    // rather than eating a guaranteed failed request on every page load.
+    try{
+      const res = await fetch(backupUrl);
+      if (res.ok) return res;
+    }catch(e){ /* fall through */ }
+    return fetch(corsproxyUrl);
+  }
   try{
-    const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`);
+    const res = await fetch(corsproxyUrl);
     if (res.ok) return res;
   }catch(e){ /* fall through to backup */ }
-  return fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
+  return fetch(backupUrl);
 }
 
 function prettify(token){
