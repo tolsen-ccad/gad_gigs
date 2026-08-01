@@ -1257,9 +1257,30 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+let loadingDotsInterval = null;
+
+function startLoadingAnimation(){
+  stopLoadingAnimation(); // guard against overlapping intervals if refresh is clicked mid-load
+  feedEl.innerHTML = '<div class="loading">Fetching the latest quests<span id="loading-dots">.</span></div>';
+  const dotsEl = document.getElementById('loading-dots');
+  const frames = ['.', '..', '...'];
+  let i = 0;
+  loadingDotsInterval = setInterval(() => {
+    i = (i + 1) % frames.length;
+    if (dotsEl) dotsEl.textContent = frames[i];
+  }, 450);
+}
+
+function stopLoadingAnimation(){
+  if (loadingDotsInterval){
+    clearInterval(loadingDotsInterval);
+    loadingDotsInterval = null;
+  }
+}
+
 async function loadAll(){
   statusEl.textContent = 'Loading listings…';
-  feedEl.innerHTML = '<div class="loading">Fetching the latest quests…</div>';
+  startLoadingAnimation();
 
   const [ghResults, leverResults, recruiteeResults, smartRecruitersResults, ashbyResults, sheetResults, rssResults] = await Promise.all([
     Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
@@ -1277,6 +1298,7 @@ async function loadAll(){
   allListings = dedupe([...manual, ...live]);
   statusEl.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · ${live.length} pulled live`;
 
+  stopLoadingAnimation();
   buildTagFilters(allListings);
   render();
 }
