@@ -888,7 +888,7 @@ function daysOld(dateStr){
 
 async function fetchGreenhouse(token){
   try{
-    const res = await fetchWithTimeout(`https://boards-api.greenhouse.io/v1/boards/${token}/jobs?content=true`);
+    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${token}/jobs?content=true`);
     if (!res.ok) return [];
     const data = await res.json();
     return (data.jobs || [])
@@ -908,7 +908,7 @@ async function fetchGreenhouse(token){
 
 async function fetchLever(token){
   try{
-    const res = await fetchWithTimeout(`https://api.lever.co/v0/postings/${token}?mode=json`);
+    const res = await fetch(`https://api.lever.co/v0/postings/${token}?mode=json`);
     if (!res.ok) return [];
     const data = await res.json();
     return (data || [])
@@ -930,7 +930,7 @@ async function fetchRecruitee(token){
   try{
     // Public, keyless Careers Site API — no auth required.
     // https://docs.recruitee.com/reference/intro-to-careers-site-api
-    const res = await fetchWithTimeout(`https://${token}.recruitee.com/api/offers`);
+    const res = await fetch(`https://${token}.recruitee.com/api/offers`);
     if (!res.ok) return [];
     const data = await res.json();
     const offers = data.offers || [];
@@ -1138,15 +1138,6 @@ async function fetchRSSFeed(feed){
 // free-tier policy has tightened multiple times. AllOrigins is used as a
 // fallback if corsproxy.io fails for any reason, so one proxy's outage or
 // policy change doesn't take down every cross-origin source at once.
-// Bounds how long any single request can hang before giving up — without
-// this, one slow or rate-limited source (especially through a free CORS
-// proxy) can hold up the entire page, since loadAll() waits on everything.
-function fetchWithTimeout(url, options = {}, ms = 6000){
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ms);
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
-}
-
 async function fetchViaProxy(targetUrl, preferBackup = false){
   const corsproxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
   const backupUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
@@ -1157,16 +1148,16 @@ async function fetchViaProxy(targetUrl, preferBackup = false){
     // URL format was corrected. Skip straight to the backup for these
     // rather than eating a guaranteed failed request on every page load.
     try{
-      const res = await fetchWithTimeout(backupUrl);
+      const res = await fetch(backupUrl);
       if (res.ok) return res;
     }catch(e){ /* fall through */ }
-    return fetchWithTimeout(corsproxyUrl);
+    return fetch(corsproxyUrl);
   }
   try{
-    const res = await fetchWithTimeout(corsproxyUrl);
+    const res = await fetch(corsproxyUrl);
     if (res.ok) return res;
   }catch(e){ /* fall through to backup */ }
-  return fetchWithTimeout(backupUrl);
+  return fetch(backupUrl);
 }
 
 function prettify(token){
@@ -1212,11 +1203,6 @@ function buildTagFilters(listings){
     };
     tagFiltersEl.appendChild(chip);
   });
-
-  // Reapply the current selection's highlight — needed since this function
-  // now runs multiple times during progressive loading, not just once at
-  // the very end, and freshly-created chips don't carry over the class.
-  [...tagFiltersEl.children].forEach(c => c.classList.toggle('active', c.textContent === activeTag));
 }
 
 function render(){
@@ -1292,45 +1278,11 @@ function stopLoadingAnimation(){
   }
 }
 
-const SESSION_CACHE_KEY = 'gad_gigs_cache_v1';
-const SESSION_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
-
-function loadFromSessionCache(){
-  try{
-    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
-    if (!raw) return null;
-    const cached = JSON.parse(raw);
-    if (Date.now() - cached.timestamp > SESSION_CACHE_TTL_MS) return null;
-    return cached.listings;
-  }catch(e){
-    return null; // storage unavailable/corrupt — just skip the cache
-  }
-}
-
-function saveToSessionCache(listings){
-  try{
-    sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), listings }));
-  }catch(e){ /* storage full or unavailable — not critical */ }
-}
-
 async function loadAll(){
-  const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
+  statusEl.textContent = 'Loading listings…';
+  startLoadingAnimation();
 
-  // Instant path: a recent cache shows results immediately with no
-  // loading state at all, then refreshes quietly in the background —
-  // data is never more than one cache window (15 min) stale.
-  const cached = loadFromSessionCache();
-  if (cached){
-    allListings = cached;
-    statusEl.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · showing cached results, refreshing…`;
-    buildTagFilters(allListings);
-    render();
-  } else {
-    statusEl.textContent = 'Loading listings…';
-    startLoadingAnimation();
-  }
-
-  const sourceGroups = [
+  const [ghResults, leverResults, recruiteeResults, smartRecruitersResults, ashbyResults, sheetResults, rssResults] = await Promise.all([
     Promise.all(CONFIG.greenhouseBoards.map(fetchGreenhouse)),
     Promise.all(CONFIG.leverBoards.map(fetchLever)),
     Promise.all(CONFIG.recruiteeBoards.map(fetchRecruitee)),
@@ -1338,38 +1290,17 @@ async function loadAll(){
     Promise.all(CONFIG.ashbyBoards.map(fetchAshby)),
     Promise.all(CONFIG.googleSheets.map(fetchGoogleSheet)),
     Promise.all(CONFIG.rssFeeds.map(fetchRSSFeed)),
-  ];
+  ]);
 
-  let live = [];
-  let settledCount = 0;
+  const live = [].concat(...ghResults, ...leverResults, ...recruiteeResults, ...smartRecruitersResults, ...ashbyResults, ...sheetResults, ...rssResults).filter(l => isValidJob(l.title));
+  const manual = CONFIG.manualListings.map(l => ({ ...l, tags: l.tags || [] }));
 
-  // Render as each source group finishes, rather than waiting on all ~30+
-  // individual requests to settle — direct-API sources (Greenhouse/Lever/
-  // Recruitee) typically resolve in well under a second, while proxy-
-  // routed sources (RSS/Sheets/SmartRecruiters/Ashby) can take much
-  // longer. This means the page starts showing real content almost
-  // immediately instead of a blank loading state for the full duration.
-  await Promise.all(sourceGroups.map(async (groupPromise) => {
-    try{
-      const results = await groupPromise;
-      live = live.concat(results);
-    }catch(e){
-      // one group failing shouldn't stop the others from displaying
-    } finally {
-      settledCount++;
-      const validLive = live.filter(l => isValidJob(l.title));
-      allListings = dedupe([...manual, ...validLive]);
-      const remaining = sourceGroups.length - settledCount;
-      statusEl.textContent = remaining > 0
-        ? `${allListings.length} listing${allListings.length === 1 ? '' : 's'} so far · loading ${remaining} more source${remaining === 1 ? '' : 's'}…`
-        : `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · ${validLive.length} pulled live`;
-      buildTagFilters(allListings);
-      render();
-    }
-  }));
+  allListings = dedupe([...manual, ...live]);
+  statusEl.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'} · ${live.length} pulled live`;
 
   stopLoadingAnimation();
-  saveToSessionCache(allListings);
+  buildTagFilters(allListings);
+  render();
 }
 
 searchInput.addEventListener('input', render);
