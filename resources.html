@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Workshops & Apprenticeships — Resources</title>
+<title>Workshops & Scholarships — Resources</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Curated workshops, training programs, and apprenticeship search resources for CCAD Game Art &amp; Design students.">
-<meta property="og:title" content="CCAD Game Art &amp; Design — Workshops &amp; Apprenticeships">
-<meta property="og:description" content="Curated workshops, training programs, and apprenticeship search resources for CCAD Game Art &amp; Design students.">
+<meta name="description" content="Curated workshops, training programs, apprenticeship search, and scholarship resources for CCAD Game Art &amp; Design students.">
+<meta property="og:title" content="CCAD Game Art &amp; Design — Workshops &amp; Scholarships">
+<meta property="og:description" content="Curated workshops, training programs, apprenticeship search, and scholarship resources for CCAD Game Art &amp; Design students.">
 <meta property="og:type" content="website">
 
 <style>
@@ -271,6 +271,22 @@
     font-style: italic;
   }
 
+  .reddit-feed{ display:flex; flex-direction:column; gap: 10px; margin-top: 4px; }
+  .reddit-card{
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease;
+  }
+  .reddit-card:hover{ border-color: var(--teal); }
+  .reddit-card-title{ font-size: 14px; font-weight: 600; margin: 0 0 4px; color: var(--text); }
+  .reddit-card-meta{ font-size: 12px; color: var(--text-muted); }
+  .reddit-feed-status{ font-size: 13px; color: var(--text-muted); padding: 6px 2px; }
+
   .dice-roll{
     display: flex;
     flex-direction: column;
@@ -309,13 +325,13 @@
 <div class="wrap">
   <header>
     <p class="eyebrow">// CCAD - GAME ART &amp; DESIGN</p>
-    <h1 id="page-title">SKILL-BUILDING &amp;<br>APPRENTICESHIPS</h1>
-    <p class="sub">Training programs, workshops, and apprenticeship search tools to build your portfolio and skills alongside job hunting. <br>These are curated by hand, not auto-searched — see why below.</p>
+    <h1 id="page-title">WORKSHOPS &amp;<br>SCHOLARSHIPS</h1>
+    <p class="sub">Training programs, workshops, apprenticeship search tools, and scholarships to build your portfolio and fund your education. <br>These are curated by hand, not auto-searched — see why below.</p>
 
     <nav class="board-nav">
       <a href="index.html" class="nav-item">⚔ Internships &amp; Entry-level</a>
       <a href="gigs.html" class="nav-item">💎 Contract &amp; Gigs</a>
-      <a href="resources.html" class="nav-item active">🎓 Workshops &amp; Apprenticeships</a>
+      <a href="resources.html" class="nav-item active">🎓 Workshops &amp; Scholarships</a>
     </nav>
   </header>
 
@@ -367,6 +383,118 @@
       </div>
     </div>
   </div>
+
+  <div class="manual-check">
+    <h2>// GAME &amp; INTERACTIVE MEDIA SCHOLARSHIPS</h2>
+    <p class="manual-check-sub">No scholarship database publishes a free public API or RSS feed — the major search sites (Fastweb, Scholarships.com, Bold.org) all require an account before you can browse anything, and reverse-engineered third-party wrappers around them aren't something we're comfortable depending on. So this list is maintained by hand, same as everything else on this page. These three are specifically tied to games, interactive media, or design.</p>
+    <div class="manual-check-grid">
+      <div class="manual-check-item">
+        <h3>ESA Foundation</h3>
+        <p>Computer &amp; Video Game Arts and Sciences Scholarship — $5,000&ndash;$10,000 for undergrads pursuing video game development careers, with a focus on underrepresented students. Also offers an Esports Scholarship.</p>
+        <div class="manual-check-links">
+          <a href="https://www.theesa.com/foundation/scholarships/" target="_blank" rel="noopener noreferrer">View Scholarships</a>
+        </div>
+      </div>
+      <div class="manual-check-item">
+        <h3>AIAS Foundation</h3>
+        <p>Run by the Academy of Interactive Arts &amp; Sciences — student and early-career scholarships for aspiring game makers, including WomenIn and Girls for Gaming tracks. Includes a funded trip to the D.I.C.E. Summit.</p>
+        <div class="manual-check-links">
+          <a href="https://www.aiasfoundation.org/programs/scholarships.asp" target="_blank" rel="noopener noreferrer">View Scholarships</a>
+        </div>
+      </div>
+      <div class="manual-check-item">
+        <h3>AIGA Worldstudio D&times;D</h3>
+        <p>Design scholarship explicitly covering "Game Design and Interactive Media" alongside illustration, photography, and graphic design. Need- and diversity-focused, undergrad &amp; grad.</p>
+        <div class="manual-check-links">
+          <a href="https://www.dxd.design/initiatives/scholarship" target="_blank" rel="noopener noreferrer">View Scholarship</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="manual-check">
+    <h2>// GENERAL SCHOLARSHIP SEARCH</h2>
+    <p class="manual-check-sub">Not game-specific, but genuinely useful broad tools — worth checking for creative-field and general undergraduate awards too.</p>
+    <div class="manual-check-grid">
+      <div class="manual-check-item">
+        <h3>CareerOneStop Scholarship Finder</h3>
+        <p>U.S. Department of Labor's free search tool — 9,500+ scholarships, fellowships, and grants. No account required to search.</p>
+        <div class="manual-check-links">
+          <a href="https://www.careeronestop.org/Toolkit/Training/find-scholarships.aspx" target="_blank" rel="noopener noreferrer">Search Scholarships</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="manual-check">
+    <h2>// LIVE FEED — r/scholarships</h2>
+    <p class="manual-check-sub">Pulled live from Reddit's r/scholarships, filtered to posts mentioning art, design, or creative-field keywords. Worth knowing: this is community discussion, not curated award listings — expect a mix of shared opportunities and people asking questions, and always verify directly before applying.</p>
+    <div class="reddit-feed" id="reddit-feed">
+      <div class="reddit-feed-status">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    function fetchWithTimeout(url, options = {}, ms = 6000){
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), ms);
+      return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
+    }
+
+    async function fetchViaProxy(targetUrl){
+      const corsproxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
+      const backupUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+      try{
+        const res = await fetchWithTimeout(corsproxyUrl);
+        if (res.ok) return res;
+      }catch(e){ /* fall through to backup */ }
+      return fetchWithTimeout(backupUrl);
+    }
+
+    const KEYWORDS = ['art', 'design', 'illustrat', 'game', 'creative', 'animation', 'graphic', 'digital media', 'visual'];
+
+    async function loadRedditFeed(){
+      const container = document.getElementById('reddit-feed');
+      try{
+        const res = await fetchViaProxy('https://www.reddit.com/r/scholarships/.rss');
+        if (!res.ok) throw new Error('bad status');
+        const text = await res.text();
+        const xml = new DOMParser().parseFromString(text, 'application/xml');
+        if (xml.querySelector('parsererror')) throw new Error('parse error');
+
+        const entries = [...xml.querySelectorAll('entry')];
+        const val = (el, sel) => el.querySelector(sel)?.textContent?.trim() || '';
+
+        const matches = entries
+          .map(entry => ({
+            title: val(entry, 'title'),
+            url: entry.querySelector('link')?.getAttribute('href') || '',
+            updated: val(entry, 'updated'),
+          }))
+          .filter(post => KEYWORDS.some(k => post.title.toLowerCase().includes(k)));
+
+        if (matches.length === 0){
+          container.innerHTML = '<div class="reddit-feed-status">No current posts match creative/art/design/game keywords — check back later, or browse r/scholarships directly.</div>';
+          return;
+        }
+
+        container.innerHTML = matches.map(post => {
+          const dateLabel = post.updated ? new Date(post.updated).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+          return `<a class="reddit-card" href="${post.url}" target="_blank" rel="noopener noreferrer">
+            <p class="reddit-card-title">${post.title.replace(/</g, '&lt;')}</p>
+            <p class="reddit-card-meta">r/scholarships${dateLabel ? ' · ' + dateLabel : ''}</p>
+          </a>`;
+        }).join('');
+      }catch(e){
+        container.innerHTML = '<div class="reddit-feed-status">Feed temporarily unavailable — try the general search tool below instead.</div>';
+        console.warn('r/scholarships feed failed to load:', e);
+      }
+    }
+
+    loadRedditFeed();
+  })();
+  </script>
 
   <div class="dice-roll" aria-hidden="true">
     <svg viewBox="0 0 120 120" width="72" height="72" class="dice-svg">
