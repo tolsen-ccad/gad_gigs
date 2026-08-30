@@ -1154,9 +1154,23 @@ function fetchWithTimeout(url, options = {}, ms = 6000){
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
 }
 
+// Self-hosted proxy, tried first for everyone. A custom domain isn't on
+// campus network content-filter blocklists the way corsproxy.io and
+// allorigins.win (both well-known generic proxy services) can be — this
+// was set up specifically because campus wifi was DNS-blocking both of
+// those third-party proxies while cellular data resolved them fine.
+const SELF_HOSTED_PROXY = 'https://gad-gigs-proxy.olsen-1.workers.dev/?url=';
+
 async function fetchViaProxy(targetUrl, preferBackup = false){
+  const selfHostedUrl = `${SELF_HOSTED_PROXY}${encodeURIComponent(targetUrl)}`;
   const corsproxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
   const backupUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+
+  try{
+    const res = await fetchWithTimeout(selfHostedUrl);
+    if (res.ok) return res;
+  }catch(e){ /* fall through to third-party proxies */ }
+
   if (preferBackup){
     // Google Sheets export URLs have repeatedly failed specifically on
     // corsproxy.io (likely a deliberate restriction — proxying
