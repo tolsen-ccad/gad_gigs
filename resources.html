@@ -487,7 +487,7 @@
           </a>`;
         }).join('');
       }catch(e){
-        container.innerHTML = '<div class="reddit-feed-status">Feed temporarily unavailable — try the general search tool below instead.</div>';
+        container.innerHTML = '<div class="reddit-feed-status">Feed temporarily unavailable; no postings currently.</div>';
         console.warn('r/scholarships feed failed to load:', e);
       }
     }
